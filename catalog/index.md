@@ -7,7 +7,7 @@
 - Update Work Items
 - Inject Table Values
 - WIQL Queries
-- Generate Work Item URLs (Alt Org)
+- Generate Work Item URLs From ID List (Alt Org)
 - Get Items QS
 - Get Open Items Daily QS
 - Update Items QS
@@ -40,6 +40,7 @@
 | [Gedate Work Items](../prompts/azure-devops/update-work-items.md) | Update work item fields safely | project, ids, patch intent | Change log by item | Active | v1.1 |
 | [Inject Table Values](../prompts/azure-devops/inject-table-values.md) | Insert markdown tables/checklists | project, ids, target field, rows | Insert-ready markdown block | Active | v1.1 |
 | [WIQL Queries](../prompts/azure-devops/wiql-queries.md) | Build WIQL filters | project, area, iteration, states, owners | WIQL + assumptions | Active | v1.1 |
+| [Generate Work Item URLs From ID List (Alt Org)](../prompts/azure-devops/generate-work-item-urls-from-id-list-alt-org.md) | Generate Work Item web URLs from a provided ID list and include title per ID | project, ids source | Plain text URL report | Active | v1.0 |
 
 ## Quickstarts
 
@@ -49,6 +50,6 @@
 | [Get Open Work Items (Daily Table) Quickstart](../prompts/azure-devops/ready/get-open-work-items-table.quickstart.md) | Fast retrieval of open Work Items with daily markdown snapshot | Active | v1.0 |
 | [Update Work Items Quickstart](../prompts/azure-devops/ready/update-work-items.quickstart.md) | Safe dry-run updates | Active | v1.0 |
 | [Inject Table Values Quickstart](../prompts/azure-devops/ready/inject-table-values.quickstart.md) | Fast table injection | Active | v1.0 |
-| [Generate Work Item URLs (Alt Org) Quickstart](../prompts/azure-devops/ready/generate-work-item-urls-alt-org.quickstart.md) | Fast URL generation from IDs for alternate org | Active | v1.0 |
+| [Generate Work Item URLs From ID List (Alt Org) Quickstart](../prompts/azure-devops/ready/generate-work-item-urls-from-id-list-alt-org.quickstart.md) | Fast URL generation from a provided ID list for alternate org | Active | v1.0 |
 
 </details>

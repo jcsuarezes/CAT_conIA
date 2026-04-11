@@ -1,4 +1,4 @@
-# Quickstart Prompt: Generate Work Item URLs (Alternate Organization)
+# Quickstart Prompt: Generate Work Item URLs From ID List (Alternate Organization)
 
 Use this ready-to-run prompt in your assistant.
 

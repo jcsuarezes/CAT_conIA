@@ -1,4 +1,4 @@
-# Prompt: Generate Azure DevOps Work Item URLs (Alternate Organization)
+# Prompt: Generate Azure DevOps Work Item URLs From ID List (Alternate Organization)
 
 ## Context
 You are helping generate direct Azure DevOps web URLs for Work Items using the alternate organization.
@@ -7,7 +7,6 @@ Fixed configuration:
 - Organization URL: https://dev.azure.com/
 - Alternate Organization URL: https://dev.azure.com/cat-digital/
 - Default project: Cat Digital
-- Alternate project: Cat Digital
 - Retrieval mode: IDs-only
 
 ## Inputs

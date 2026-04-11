@@ -1,5 +1,10 @@
 # Prompt History
 
+## 2026-04-11 (v1.6)
+- Renamed prompt `generate-work-item-urls-alt-org.md` to `generate-work-item-urls-from-id-list-alt-org.md` to make the function explicit (URL generation from provided Work Item ID list).
+- Renamed quickstart `ready/generate-work-item-urls-alt-org.quickstart.md` to `ready/generate-work-item-urls-from-id-list-alt-org.quickstart.md` for consistency.
+- Updated catalog naming and core prompt link accordingly.
+
 ## 2026-04-11 (v1.5)
 - Added reusable prompt `get-open-work-items-by-assignee-daily.md` for querying open Work Items by assigned user, rendering a markdown table, and saving a daily snapshot file.
 - Registered prompt in `catalog/index.md` (Quick Access and Core Prompts).
