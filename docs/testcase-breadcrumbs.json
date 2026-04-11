@@ -1,0 +1,77 @@
+﻿{
+    "version": "2.0",
+    "purpose": "Reusable repository that stores only test steps and expected results.",
+    "rules": {
+        "language": "English",
+        "record_format": "Each record must contain only step and expected_result.",
+        "output_required": [
+            "step_result_pairs"
+        ],
+        "quality_checks": [
+            "Each step has one expected result",
+            "Expected results are observable and testable",
+            "Use clear and concise wording",
+            "Step length must be 180 characters or fewer",
+            "Expected result length must be 220 characters or fewer"
+        ],
+        "azure_devops_text_standard": {
+            "max_characters_per_step": 180,
+            "max_characters_per_expected_result": 220,
+            "single_sentence_preferred": true,
+            "avoid_manual_line_breaks": true,
+            "readability_rule": "Keep text short enough to remain fully visible and readable in Azure DevOps test step columns without truncation."
+        },
+        "do_not_include": [
+            "scenario type labels",
+            "ids",
+            "titles",
+            "preconditions"
+        ]
+    },
+    "entries": [
+        {
+            "step_result_pairs": [
+                {
+                    "step": "",
+                    "expected_result": ""
+                }
+            ]
+        },
+        {
+            "step_result_pairs": [
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                },
+                {
+                    "step": "",
+                    "expected_result": ""
+                }
+            ]
+        }
+    ]
+}
