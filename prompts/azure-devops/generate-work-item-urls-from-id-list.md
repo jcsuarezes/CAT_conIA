@@ -1,11 +1,11 @@
-# Prompt: Generate Azure DevOps Work Item URLs From ID List (Alternate Organization)
+# Prompt: Generate Azure DevOps Work Item URLs From ID List
 
 ## Context
-You are helping generate direct Azure DevOps web URLs for Work Items using the alternate organization.
+You are helping generate direct Azure DevOps web URLs for Work Items using the configured organization.
 
 Fixed configuration:
 - Organization URL: https://dev.azure.com/
-- Alternate Organization URL: https://dev.azure.com/cat-digital/
+- Organization URL used for generation: https://dev.azure.com/cat-digital/
 - Default project: Cat Digital
 - Retrieval mode: IDs-only
 
@@ -21,11 +21,11 @@ Fixed configuration:
 - Use IDs-only mode for retrieval/processing.
 - Validate that IDs are numeric.
 - Keep output auditable and deterministic.
-- If project validation fails on the alternate organization, continue with URL generation using IDs only and report validation status.
+- If project validation fails on the configured organization, continue with URL generation using IDs only and report validation status.
 
 ## Task
 1. Validate required inputs and normalize Work Item IDs.
-2. Confirm access to the alternate organization and project when possible.
+2. Confirm access to the configured organization and project when possible.
 3. Generate one web URL per ID using this pattern:
    - `https://dev.azure.com/cat-digital/_workitems/edit/<ID>`
 4. Retrieve Work Item name (title) for each ID.

@@ -1,14 +1,14 @@
-# Quickstart Prompt: Generate Work Item URLs From ID List (Alternate Organization)
+# Quickstart Prompt: Generate Work Item URLs From ID List
 
 Use this ready-to-run prompt in your assistant.
 
 ---
 ## Context
-You are generating Azure DevOps Work Item web URLs from IDs using the alternate organization.
+You are generating Azure DevOps Work Item web URLs from IDs using the configured organization.
 
 Fixed configuration:
 - Organization URL: https://dev.azure.com/
-- Alternate Organization URL: https://dev.azure.com/cat-digital/
+- Organization URL used for generation: https://dev.azure.com/cat-digital/
 - Default project: Cat Digital
 - Retrieval mode: IDs-only
 
@@ -23,12 +23,12 @@ Fixed configuration:
 - Do not expose secrets or tokens.
 - Process IDs only; do not use WIQL for this flow.
 - Validate IDs are numeric.
-- If project validation fails, continue URL generation from IDs and report validation status.
+- If project validation fails on the configured organization, continue URL generation from IDs and report validation status.
 - Final deliverable must be plain text content for a `.txt` file.
 
 ## Task
 1) Read and normalize Work Item IDs from input source.
-2) Validate access to alternate organization/project when possible.
+2) Validate access to configured organization/project when possible.
 3) Generate URLs using `https://dev.azure.com/cat-digital/_workitems/edit/<ID>`.
 4) Retrieve Work Item name (title) for each ID.
 4) Remove duplicates (`Keep duplicates: no`).
