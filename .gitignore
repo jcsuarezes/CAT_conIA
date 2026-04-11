@@ -1,0 +1,23 @@
+# Local secrets and env files
+.env
+.env.*
+*.secret
+*.secrets
+*.token
+*.key
+
+# Local security notes outside tracked docs
+.prompt-secrets/
+
+# Generated operational outputs (can include internal work item metadata)
+outputs/daily/*.md
+
+# Logs and temp artifacts
+*.log
+*.tmp
+*.bak
+*.swp
+
+# OS/editor artifacts
+.DS_Store
+Thumbs.db
