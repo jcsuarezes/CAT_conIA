@@ -9,7 +9,7 @@ These instructions apply to all generated markdown prompts under `prompts/azure-
 1. Always include fixed configuration:
    - Organization URL: `https://dev.azure.com/cat-digital`
    - Default project: `Cat Digital`
-`
+
 2. For get-work-item retrieval prompts, use IDs-only mode unless explicitly requested otherwise.
 3. Never include real secrets (PAT/token values) in any markdown file.
 4. Every time a new prompt file is created:
@@ -27,8 +27,6 @@ These instructions apply to all generated markdown prompts under `prompts/azure-
 - If `Assigned To` is missing, ask first; if the user does not provide a value, use the default assigned user from `profiles/default.md`.
 - Keep these defaults non-secret and updated when the user requests changes.
 
-
-
 ## Prompt quality standard
 - Keep prompts in English.
 - Use sections: Context, Inputs, Constraints, Task, Output Format, Validation Checklist.
@@ -42,6 +40,8 @@ When an error, incorrect output, or invalid assumption is detected:
 
 - The error must be explicitly identified.
 - A correction must be documented.
-- Repeated errors should be tracked in a dedicated knowledge file.
+- Repeated errors should be tracked in a dedicated knowledge file. 
+   (e.g., docs/ai-known-failures.md or prompts-history.md)  
 - Future prompts should be updated or constrained to prevent recurrence.
+- Documented errors should reference the related prompt file and date.
 
