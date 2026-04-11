@@ -45,3 +45,25 @@ When an error, incorrect output, or invalid assumption is detected:
 - Future prompts should be updated or constrained to prevent recurrence.
 - Documented errors should reference the related prompt file and date.
 
+## Creating Test Cases
+
+The AI should generate test cases using gherkin syntax for any prompt that involves complex logic, multiple steps, or critical operations (e.g., work item updates).
+Test cases should cover at least a 3:1 ratio of happy path scenarios to edge/error cases.
+This ratio represents a minimum baseline and must never be interpreted as a strict limit.
+Additional edge and error scenarios should be added whenever risk, complexity, or criticality increases.
+
+- Happy path scenarios
+- Edge cases (e.g., missing inputs, invalid IDs, no access to organization/project)
+- Error scenarios (e.g., API failures, permission issues)
+- Expected outcomes must be observable and verifiable, avoiding vague assertions
+- Avoid redundant scenarios that do not add new validation value
+
+Each Gherkin scenario must include:
+- Given: initial system context and preconditions
+- And: any additional context or setup
+- When: the action being performed
+- And: any additional steps or conditions
+- Then: expected outcome
+- And: additional assertions or outcomes if needed
+
+
