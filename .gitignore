@@ -21,3 +21,4 @@ outputs/daily/*.md
 # OS/editor artifacts
 .DS_Store
 Thumbs.db
+*.ps1
