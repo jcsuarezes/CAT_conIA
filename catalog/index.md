@@ -4,6 +4,7 @@
 - Get Work Items
 - Get Open Work Items (Daily Table)
 - Get Open Work Items By Assignee (Daily)
+- Create WebServices Test Cases From User Story
 - Update Work Items
 - Inject Table Values
 - WIQL Queries
@@ -37,7 +38,8 @@
 | [Get Work Items](../prompts/azure-devops/get-work-items.md) | Retrieve work items by IDs | project, ids, fields | Summary table | Active | v1.1 |
 | [Get Open Work Items (Daily Table)](../prompts/azure-devops/get-open-work-items-table.md) | Retrieve open items (New, Active, In Progress) with markdown table and daily snapshot | project, assignedTo | Markdown table + daily markdown file | Active | v1.0 |
 | [Get Open Work Items By Assignee (Daily)](../prompts/azure-devops/get-open-work-items-by-assignee-daily.md) | Retrieve open Work Items for a specific assignee and save a dated markdown snapshot | project, assignedTo | Markdown table + daily markdown file | Active | v1.0 |
-| [Gedate Work Items](../prompts/azure-devops/update-work-items.md) | Update work item fields safely | project, ids, patch intent | Change log by item | Active | v1.1 |
+| [Create WebServices Test Cases From User Story](../prompts/azure-devops/create-webservices-test-cases-from-user-story.md) | Generate test cases from webservices user story; reuse provided requirement-based suite or create one under a provided test plan | user story ID, requirement based suite ID optional, test plan ID conditional, webservice URL | Requirement Based Suite ID, TC###-prefixed test case IDs | Active | v1.16 |
+| [Update Work Items](../prompts/azure-devops/update-work-items.md) | Update work item fields safely | project, ids, patch intent | Change log by item | Active | v1.1 |
 | [Inject Table Values](../prompts/azure-devops/inject-table-values.md) | Insert markdown tables/checklists | project, ids, target field, rows | Insert-ready markdown block | Active | v1.1 |
 | [WIQL Queries](../prompts/azure-devops/wiql-queries.md) | Build WIQL filters | project, area, iteration, states, owners | WIQL + assumptions | Active | v1.1 |
 | [Generate Work Item URLs From ID List](../prompts/azure-devops/generate-work-item-urls-from-id-list.md) | Generate Work Item web URLs from a provided ID list and include title per ID | project, ids source | Plain text URL report | Active | v1.0 |

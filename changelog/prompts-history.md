@@ -1,5 +1,75 @@
 # Prompt History
 
+## 2026-04-14 (v1.16) — STEPS RENDERING + EXECUTION HARDENING
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Step population fix**:
+  - Standardized Step 5 to use `az boards work-item update --field "Microsoft.VSTS.TCM.Steps=..."`.
+  - Added explicit XML guidance requiring quoted attributes (`id='0'`, `type='ActionStep'`) to ensure Azure Test Plans renders the Steps grid.
+  - Added validation requirement to confirm stored Steps XML includes quoted attributes and at least one `<step ...>` element.
+- **Comments resilience**:
+  - Added fallback behavior when `wit/comments` fails (`COMMENTS_STATUS=UNAVAILABLE`) so execution continues with Acceptance Criteria and Description.
+- **URL safety**:
+  - Added pre-flight and limitation notes to avoid URL truncation when `<WEBSERVICE_URL>` contains `&` by using variables or temp files.
+- **Catalog maintenance**:
+  - Bumped catalog version for this prompt to `v1.16`.
+  - Corrected catalog typo `Gedate Work Items` -> `Update Work Items`.
+
+## 2026-04-13 (v1.15) — DUPLICATE SUITE INCIDENT FIX
+- **Incident**: 3 identical test suites created under Test Plan 2654621 for User Story 2629267 (Sprint 145).
+- **Root Cause**: Step 3 queried only direct children of the root suite (`parentSuiteId=<ROOT_SUITE_ID>`). Suites created in previous runs were not visible in this scoped query, so the guard always evaluated `$existingCount = 0` and created a new suite each time.
+- **Fix in `create-webservices-test-cases-from-user-story.md`**:
+  - Replaced scoped query with a **plan-wide suite listing** (no `parentSuiteId` filter).
+  - Changed condition from `$existingCount -gt 1` to `$existingCount -ge 1` — ANY match triggers a **HARD STOP**.
+  - Removed silent auto-reuse: user must reply `reuse <ID>` explicitly before execution continues.
+  - Added **post-creation assertion** (Step 3-D): after creating a suite, re-query all plan suites and assert exactly 1 suite with that name exists. If count ≠ 1, halt.
+  - Updated **Suite Uniqueness Rule** in Constraints to reflect plan-wide search requirement.
+- **Files changed**: `prompts/azure-devops/create-webservices-test-cases-from-user-story.md`, `changelog/prompts-history.md`
+
+## 2026-04-14 (v1.14) - CRITICAL FIXES & CLI BUG DOCUMENTATION
+- **Major Updates to `create-webservices-test-cases-from-user-story.md`**:
+  - **Steps 5-7 rewritten**: Documented known Azure DevOps CLI PATCH bug (`KeyError: 'type'` in v1.0.2) that prevents automated step population. Moved to Option A (manual UI), Option B (Invoke-RestMethod), or Option C (defer).
+  - **Pre-Flight Input Validation added**: New section to normalize Sprint Name (extract from full path) and validate Webservice URL (reject template variables).
+  - **Step 7 (Verify Suite Membership)** enhanced with critical validation: MUST verify that returned test case count equals expected count; fail loudly if not.
+  - **Added PowerShell Best Practices section**: UTF-8 no-BOM encoding guidance, silent failure detection, error handling patterns.
+  - **Updated Pre-Execution Validation**: Added URL and Sprint Name normalization checks before any API calls.
+- **Lessons Learned**: Silent API failures (POST returns 200 but doesn't actually link), UTF-8 BOM encoding issues, CLI bugs are not workaroundable—must provide alternatives upfront.
+- **Documentation**:  Added session memory file `/memories/session/execution-errors-2629267.md` with detailed error root causes.
+  - Added persistent user memory `/memories/azure-devops-cli-pitfalls.md` with CLI antipatterns and best practices.
+
+## 2026-04-13 (v1.13)
+- Updated `create-webservices-test-cases-from-user-story.md` to explicitly prioritize sources when designing test cases: **Acceptance Criteria > Description > Discussion**.
+- Added mandatory retrieval of User Story discussion/comments and conflict handling rule (Acceptance Criteria takes precedence).
+- Added validation checks confirming all three sources were reviewed before generating test cases.
+
+## 2026-04-13 (v1.12)
+- Enhanced `prompts/azure-devops/_prompt-template.md` with explicit input sections by User Story type: Webservices, UI, and Data.
+- Added mandatory User Story type confirmation for test case generation.
+- Added template task checks to enforce Webservice URL validation and BRUNO Step 1 only when type is Webservices.
+
+## 2026-04-13 (v1.11)
+- Updated `prompts/azure-devops/_prompt-template.md` to enforce BRUNO + Webservice URL only for **Webservices** test case generation.
+- Added conditional guard in template so this rule does not apply to UI or Data test cases.
+
+## 2026-04-13 (v1.10)
+- Updated `create-webservices-test-cases-from-user-story.md` to require **Webservice URL** as mandatory input before execution.
+- Added rule that the first step/action/expected result in every generated test case must open **BRUNO for APIs** and set the provided endpoint URL.
+- Added missing-input guard: if Webservice URL is not provided, prompt execution must stop and request it.
+
+## 2026-04-13 (v1.9)
+- Updated `create-webservices-test-cases-from-user-story.md` to create User Story links using `Tested By` from the User Story side (`--id <USER_STORY_ID> --relation-type "Tested By" --target-id <TC_ID>`), ensuring the flask indicator appears on the story card.
+- Added explicit verification for relation type `Microsoft.VSTS.Common.TestedBy-Forward` on the User Story.
+
+## 2026-04-13 (v1.8)
+- Enhanced `create-webservices-test-cases-from-user-story.md` with validation step (Step 8) to verify test case creation, steps population, and Design state.
+- Added relationship linking (Step 9) to associate each test case with the source user story work item using "Tests" / "Tested By" relationship types.
+- Updated validation checklist to require: steps field verification, relationship confirmation, and state validation.
+
+## 2026-04-13 (v1.7)
+- Added reusable prompt `create-webservices-test-cases-from-user-story.md` for generating Azure DevOps Test Cases from Gherkin webservices user stories.
+- Prompt accepts User Story ID and Test Plan ID as parameters; creates suite with TC### naming convention; includes step/expected result population in native Azure DevOps XML format.
+- Enforces 3:1 test case ratio (happy path:edge cases) and step/result character limits for Azure DevOps UI readability.
+- Registered prompt in `catalog/index.md` (Quick Access and Core Prompts).
+
 ## 2026-04-11 (v1.6)
 - Renamed the URL-generation prompt to `generate-work-item-urls-from-id-list.md` to make the function explicit (URL generation from provided Work Item ID list).
 - Renamed the matching quickstart to `ready/generate-work-item-urls-from-id-list.quickstart.md` for consistency.

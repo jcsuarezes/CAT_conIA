@@ -8,7 +8,7 @@ These instructions apply to all generated markdown prompts under `prompts/azure-
 ## Mandatory rules
 1. Always include fixed configuration:
    - Organization URL: `https://dev.azure.com/cat-digital`
-   - Default project: `Cat Digital`
+   - Default project: `Cat Digital` 
 
 2. For get-work-item retrieval prompts, use IDs-only mode unless explicitly requested otherwise.
 3. Never include real secrets (PAT/token values) in any markdown file.
@@ -47,10 +47,17 @@ When an error, incorrect output, or invalid assumption is detected:
 
 ## Creating Test Cases
 
-The AI should generate test cases using gherkin syntax for any prompt that involves complex logic, multiple steps, or critical operations (e.g., work item updates).
-Test cases should cover at least a 3:1 ratio of happy path scenarios to edge/error cases.
-This ratio represents a minimum baseline and must never be interpreted as a strict limit.
-Additional edge and error scenarios should be added whenever risk, complexity, or criticality increases.
+The AI should generate test cases using gherkin syntax for any prompt that involves Azure DevOps operations.
+There are three supported User Story types for test design: Webservices, UI, and Data.
+If the User Story type is not explicitly provided, ask the user to confirm whether it is Webservices, UI, or Data before generating or saving test cases.
+Generate only the minimum number of test cases necessary to cover the acceptance criteria, core behavior, and distinct risks.
+Do not create extra scenarios when they do not validate a new rule, branch, or observable outcome.
+As a general rule, keep an exact 3:1 ratio of happy path scenarios to edge/error scenarios.
+Only exceed this ratio when a specific risk, complexity, or criticality clearly requires additional coverage.
+Generated test cases must be stored in their corresponding folders based on User Story type:
+- `outputs/test-cases/webservices/` for Webservices stories
+- `outputs/test-cases/ui/` for UI stories
+- `outputs/test-cases/data/` for Data stories
 
 - Happy path scenarios
 - Edge cases (e.g., missing inputs, invalid IDs, no access to organization/project)
