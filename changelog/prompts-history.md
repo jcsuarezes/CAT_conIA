@@ -1,5 +1,16 @@
 # Prompt History
 
+## 2026-04-17 (v1.33) — OPTIONAL SPANISH INSTRUCTIONS INPUT
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Changes**:
+  - Added optional input `Additional Instructions (Spanish Comments)` for free-form operational context in Spanish.
+  - Added constraint rule: Spanish instructions inform test design choices but must NOT be copied into test case titles, actions, expected results, or any generated artifact (all remain 100% English).
+  - Extended pre-flight validation to confirm Additional Instructions are in Spanish and intended for guidance only.
+  - Updated output format to include `ADDITIONAL INSTRUCTIONS (Spanish) APPLIED: <YES|NO>` for auditable tracking.
+  - Added validation checklist item to confirm Spanish comments were not copied into generated test cases.
+- **Use case**: User can provide business context, design priorities, or special rules in native Spanish without requiring test case content translation or English-language brittleness.
+- **Enforcement**: If Additional Instructions are provided, they remain in execution context only and do not appear in any persisted Work Item field.
+
 ## 2026-04-17 (v1.32) - STEPS FALSE-PASS PREVENTION HARDENING
 - **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
 - **Knowledge base updated**: `docs/ai-known-failures.md`

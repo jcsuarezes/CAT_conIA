@@ -15,11 +15,13 @@ Use the User Story as the source of truth for title, area, and iteration. Use an
 - **Response Attribute Verification**: Required expected attribute checks inside the response. Ask the user explicitly which objects and fields must be validated. Example: `medias must contain mediaNumber, revisionNumber, title, terminationDate; languages must contain availableLanguage, language, latest`.
 - **Request Body**: Required only when `HTTPS Request Type` is `POST`, `PUT`, or `DELETE`. Use the literal payload that must be sent to the endpoint.
 - **Discussion/Comments Scope**: Number of latest comments to evaluate. Default: `20`.
+- **Additional Instructions (Spanish Comments)**: Optional. Free-form text in Spanish to provide context, business rules, or special test design guidance that should influence test case generation but not appear in the test cases themselves (which remain in English).
 
 Input safety note:
 - Example IDs shown in this file are illustrative only.
 - Never reuse IDs from previous runs unless the user explicitly provides them again.
 - If any required input is missing, stop and request it explicitly before generating or executing commands.
+- Additional Instructions are intended for operational context only; they must not be written into test case titles, actions, or expected results (all must remain in English).
 
 ## Constraints
 - **Language**: English for all prompt content, test case titles, steps, and expected results.
@@ -60,6 +62,7 @@ Input safety note:
 - **Webservice URL Rule**: The URL must be complete and literal. If it contains template variables such as `{{url}}` or `${url}`, stop and request the real URL.
 - **Secrets Rule**: Never include real tokens, PAT values, or secrets. If the user shares a real authorization token, ask for a masked placeholder instead before storing it in output. It is acceptable to remind the user to retrieve the original header from the browser network trace and then provide only a masked or descriptive representation.
 - **Operational Safety Rule**: Follow the validated Azure DevOps CLI patterns documented in `docs/ai-known-failures.md`. If a command path is known to be fragile in this environment, use the documented workaround instead of retrying the same invalid pattern.
+- **Spanish Instructions Rule**: If the user provides `<ADDITIONAL_INSTRUCTIONS>` (Spanish comments/context), use them to inform test design choices (e.g., which scenarios matter most, what business rules apply) but never copy their text into test case titles, actions, or expected results. Test cases remain 100% in English. Document any guidance taken from `<ADDITIONAL_INSTRUCTIONS>` in the output assumptions section.
 
 ## Execution Safety Profile
 - **Shared guidance source**: `docs/ai-known-failures.md`
@@ -80,6 +83,7 @@ Input safety note:
 
 ### Input Collection Mode
 Before pre-flight validation, collect missing required inputs sequentially (one question at a time) and do not infer missing values.
+Optional input `<ADDITIONAL_INSTRUCTIONS>` may be collected if the user volunteers it; otherwise, ask after all required inputs are confirmed and execution is about to begin.
 
 ### Pre-Flight Input Validation
 Before starting any API calls:
@@ -94,6 +98,7 @@ Before starting any API calls:
 9. Validate `<WEBSERVICE_URL>` is literal and does not contain template variables.
 10. If `<COMMENTS_SCOPE>` is missing or empty, set it to `20`.
 11. If `<WEBSERVICE_URL>` contains `&`, store it in a PowerShell variable before passing it to commands.
+12. If `<ADDITIONAL_INSTRUCTIONS>` is provided, confirm it is in Spanish and is intended for operational guidance only (not for copying into test cases).
 
 ### Step 1: Retrieve User Story Details
 ```bash
@@ -355,6 +360,7 @@ STEP VALIDATION EVIDENCE:
 - <TC_ID> stepCount=<N> actionExpectedPairs=PASS|FAIL descriptionNodes=PASS|FAIL
 - <TC_ID> stepCount=<N> actionExpectedPairs=PASS|FAIL descriptionNodes=PASS|FAIL
 FINAL STATUS: COMPLETED | COMPLETED WITH ASSUMPTIONS | BLOCKED
+ADDITIONAL INSTRUCTIONS (Spanish) APPLIED: <YES|NO>
 PRIORITY FOLLOW-UP: <NONE or concise statement of additional high-priority Test Cases that would add value without filler>
 ```
 
@@ -374,6 +380,7 @@ PRIORITY FOLLOW-UP: <NONE or concise statement of additional high-priority Test 
 - [ ] `<AUTHORIZATION_HEADER>` was explicitly requested and validated as a literal `Authorization` header value without exposing a real secret.
 - [ ] `<RESPONSE_ATTRIBUTE_VERIFICATION>` was explicitly requested and validated before test design.
 - [ ] `<REQUEST_BODY>` was explicitly requested when `<HTTPS_REQUEST_TYPE>` was `POST`, `PUT`, or `DELETE`.
+- [ ] If `<ADDITIONAL_INSTRUCTIONS>` (Spanish comments) were provided, they were used to inform test design choices but NOT copied into test case titles/actions/expected results.
 - [ ] If comments retrieval failed, `COMMENTS_STATUS=UNAVAILABLE` was recorded and execution continued with Acceptance Criteria and Description.
 - [ ] Test design priority was Acceptance Criteria > Description > Discussion.
 - [ ] Every Test Case title starts with `TC###` and includes `US<USER_STORY_ID>`.
