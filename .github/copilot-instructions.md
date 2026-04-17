@@ -20,6 +20,12 @@ These instructions apply to all generated markdown prompts under `prompts/azure-
 7. Use official Azure DevOps terminology (Work Item, ID, Organization, Project, WIQL, etc.)
 8. Avoid synonyms that could introduce ambiguity (e.g., "ticket" instead of "work item").
 9. Always validate that any provided IDs are numeric and properly formatted.
+10. Prompt-first architecture: the primary operating model is markdown prompts under `prompts/azure-devops/`. Scripts are optional operational helpers and must not become the source of truth for process rules.
+11. Script lifecycle policy:
+   - Do not create new story-specific or one-off scripts under `scripts/` unless explicitly requested by the user.
+   - Prefer updating reusable prompt guidance first. Only add automation when prompts cannot reliably cover the task.
+   - If automation is still needed, prefer a single reusable flow script over multiple scenario-specific scripts.
+   - Any script exception must be documented in `changelog/prompts-history.md` with reason, owner, and intended retirement date.
 
 ## User defaults for future prompts
 - Source of user defaults: `profiles/default.md`
@@ -31,6 +37,12 @@ These instructions apply to all generated markdown prompts under `prompts/azure-
 - Keep prompts in English.
 - Use sections: Context, Inputs, Constraints, Task, Output Format, Validation Checklist.
 - Return auditable output and explicit validation checks.
+
+## Framework persistence standard
+- Keep process logic in prompt files and shared docs, not duplicated across many scripts.
+- Treat `docs/validated-command-patterns.md` as the command behavior baseline for prompt instructions.
+- When a script and a prompt disagree, align the prompt and docs first, then refactor or retire the script.
+- Prevent script sprawl: keep `scripts/` as legacy/support unless an explicit reusable automation gap is validated.
 
 
 ## Error Handling and Learning Loop
@@ -52,8 +64,9 @@ There are three supported User Story types for test design: Webservices, UI, and
 If the User Story type is not explicitly provided, ask the user to confirm whether it is Webservices, UI, or Data before generating or saving test cases.
 Generate only the minimum number of test cases necessary to cover the acceptance criteria, core behavior, and distinct risks.
 Do not create extra scenarios when they do not validate a new rule, branch, or observable outcome.
-As a general rule, keep an exact 3:1 ratio of happy path scenarios to edge/error scenarios.
-Only exceed this ratio when a specific risk, complexity, or criticality clearly requires additional coverage.
+As a general rule, target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set.
+Treat this as a coverage-balancing guideline, not as a rigid per-scenario quota. Do not add negative or edge/error cases only to force the count.
+Adjust the ratio when the minimum viable coverage is achieved with fewer edge/error scenarios, or when a specific risk, complexity, or criticality clearly requires additional coverage.
 Generated test cases must be stored in their corresponding folders based on User Story type:
 - `outputs/test-cases/webservices/` for Webservices stories
 - `outputs/test-cases/ui/` for UI stories
@@ -69,6 +82,7 @@ When creating or guiding the creation of Test Case work items in Azure DevOps Te
 - In instructions and outputs, explicitly state both IDs when relevant:
    - Parent/container suite ID
    - Target child suite ID (creation destination)
+- For suite discovery/reuse/creation logic, use `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` as the reusable source of truth. Do not duplicate suite-resolution logic across prompts.
 
 - Happy path scenarios
 - Edge cases (e.g., missing inputs, invalid IDs, no access to organization/project)

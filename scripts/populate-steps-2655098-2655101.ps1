@@ -62,12 +62,12 @@ Update 2655100 @(
     @{a = "Verify @odata.count is lower than a plain OIL-only search confirming NOT exclusion reduces the result set"; e = "NOT exclusion applied; count is strictly lower than plain OIL search; PUMP items are absent" }
 )
 
-# TC004 - Fallback Logic (2655101)
+# TC004 - Default Search Behavior (2655101)
 $qs104 = $base + '&searchterm=oil%20and%20pump&top=50&skip=0&count=true&isMultipleProductFamilyFacets=true&allowExpandedMiningProducts=true'
 Update 2655101 @(
     @{a = "Send HTTP GET to: $qs104 (all lowercase, no quoting - 'and' is NOT a boolean operator here)"; e = "HTTP 200 OK; response body is valid JSON" }
-    @{a = "Compare result count and items to TC001 (uppercase AND boolean); verify lowercase 'and' is NOT treated as boolean AND"; e = "Result count differs from TC001; lowercase 'and' triggers non-boolean fallback logic returning more or different results" }
-    @{a = "Verify exact-match items appear boosted at the top and partial-match items rank lower in the result order"; e = "Items matching the exact phrase 'oil and pump' rank highest; items matching partial terms appear below; boost/fallback behavior is observable" }
+    @{a = "Compare result count and items to TC001 (uppercase AND boolean); verify lowercase 'and' is NOT treated as boolean AND"; e = "Result count differs from TC001; lowercase 'and' triggers the default search behavior and returns more or different results" }
+    @{a = "Verify exact-match items appear boosted at the top and partial-match items rank lower in the result order"; e = "Items matching the exact phrase 'oil and pump' rank highest; items matching partial terms appear below; default search behavior is observable" }
 )
 
 Write-Host "Done."

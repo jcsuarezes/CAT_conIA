@@ -6,7 +6,7 @@
 - Team:
 
 ## Azure DevOps Context
-- Organization URL: `https://dev.azure.com/`
+- Organization URL: `https://dev.azure.com/cat-digital`
 - Default project: `Cat Digital`
 - Preferred work item types:
 - Preferred output language: `English`

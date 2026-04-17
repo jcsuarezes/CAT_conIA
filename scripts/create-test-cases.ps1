@@ -20,7 +20,7 @@ $testCaseTitles = @(
   "TC002 - US2629267 - Exact Phrase Search",
   "TC003 - US2629267 - Boolean OR Search",
   "TC004 - US2629267 - Boolean NOT Search",
-  "TC005 - US2629267 - Fallback Logic No Operators"
+  "TC005 - US2629267 - Search Without Boolean Operators"
 )
 
 Write-Host ""
@@ -190,7 +190,7 @@ Write-Host "  TC001: Boolean AND Search"
 Write-Host "  TC002: Exact Phrase Search"
 Write-Host "  TC003: Boolean OR Search"
 Write-Host "  TC004: Boolean NOT Search"
-Write-Host "  TC005: Fallback Logic No Operators"
+Write-Host "  TC005: Search Without Boolean Operators"
 
 Write-Host ""
 Write-Host "Statistics:" -ForegroundColor White

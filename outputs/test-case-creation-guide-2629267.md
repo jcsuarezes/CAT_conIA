@@ -39,7 +39,7 @@
 3. Set:
    - Area Path: `Cat Digital\A - SIS\A - SIS Core Team 2`
    - Iteration: `26.05.00 (Apr 02 - Apr 22)`
-   - Description: "Happy Path: AND operator with multiple terms"
+   - Description: "Verify AND operator with multiple terms"
 4. **Click Steps** section
 5. Add steps:
    - **Step 1 Action**: Open BRUNO or Swagger and set request URL to the webservice
@@ -59,7 +59,7 @@
 3. Set:
    - Area Path: `Cat Digital\A - SIS\A - SIS Core Team 2`
    - Iteration: `26.05.00 (Apr 02 - Apr 22)`
-   - Description: "Happy Path: Exact phrase with double quotes"
+   - Description: "Verify exact phrase handling with double quotes"
 4. **Click Steps** section
 5. Add steps:
    - **Step 1 Action**: Open BRUNO or Swagger and set request URL  
@@ -79,7 +79,7 @@
 3. Set:
    - Area Path: `Cat Digital\A - SIS\A - SIS Core Team 2`
    - Iteration: `26.05.00 (Apr 02 - Apr 22)`
-   - Description: "Happy Path: OR operator with multiple terms"
+   - Description: "Verify OR operator with multiple terms"
 4. **Click Steps** section
 5. Add steps:
    - **Step 1 Action**: Open BRUNO or Swagger and set request URL
@@ -99,7 +99,7 @@
 3. Set:
    - Area Path: `Cat Digital\A - SIS\A - SIS Core Team 2`
    - Iteration: `26.05.00 (Apr 02 - Apr 22)`
-   - Description: "Happy Path: NOT operator to exclude terms"
+   - Description: "Verify NOT operator excludes terms"
 4. **Click Steps** section
 5. Add steps:
    - **Step 1 Action**: Open BRUNO or Swagger and set request URL
@@ -112,14 +112,14 @@
 
 ---
 
-#### **TC005: Fallback Logic No Operators (Edge Case)**
+#### **TC005: Search Without Boolean Operators**
 
 1. Click **+ New Test Case**
-2. Enter Title: `TC005 - US2629267 - Fallback Logic No Operators`
+2. Enter Title: `TC005 - US2629267 - Search Without Boolean Operators`
 3. Set:
    - Area Path: `Cat Digital\A - SIS\A - SIS Core Team 2`
    - Iteration: `26.05.00 (Apr 02 - Apr 22)`
-   - Description: "Edge Case: Search without booleans/quotes falls back to current logic"
+   - Description: "Verify default search behavior without boolean operators or quotes"
 4. **Click Steps** section
 5. Add steps:
    - **Step 1 Action**: Open BRUNO or Swagger and set request URL

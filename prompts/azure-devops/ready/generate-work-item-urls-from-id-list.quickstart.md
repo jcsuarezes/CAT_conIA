@@ -8,12 +8,11 @@ You are generating Azure DevOps Work Item web URLs from IDs using the configured
 
 Fixed configuration:
 - Organization URL: https://dev.azure.com/cat-digital
-- Organization URL used for generation: https://dev.azure.com/cat-digital/
 - Default project: Cat Digital
 - Retrieval mode: IDs-only
 
 ## Inputs
-- Organization URL: https://dev.azure.com/cat-digital/
+- Organization URL: https://dev.azure.com/cat-digital
 - Project: Cat Digital
 - Work Item IDs source: file `url_work_items.txt`
 - Keep duplicates: no
@@ -31,7 +30,7 @@ Fixed configuration:
 2) Validate access to configured organization/project when possible.
 3) Generate URLs using `https://dev.azure.com/cat-digital/_workitems/edit/<ID>`.
 4) Retrieve Work Item name (title) for each ID.
-4) Remove duplicates (`Keep duplicates: no`).
+5) Remove duplicates (`Keep duplicates: no`).
 5) Save one record per line to `%USERPROFILE%\\Desktop\\URL.txt` using `|` separator:
 	- `<ID>|<Name>|<URL>`
 6) Return an auditable summary.
@@ -50,7 +49,7 @@ Fixed configuration:
 - `<ID>|<Name>|<URL>`
 
 ## Validation Checklist
-- [ ] Organization URL is set (`https://dev.azure.com/cat-digital/`)
+- [ ] Organization URL is set (`https://dev.azure.com/cat-digital`)
 - [ ] Project is set (`Cat Digital`)
 - [ ] IDs are numeric and normalized
 - [ ] IDs-only mode respected

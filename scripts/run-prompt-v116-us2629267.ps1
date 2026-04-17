@@ -42,7 +42,7 @@ $expectedTitles = @(
     'TC001 - US2629267 - Boolean Search - AND Exact Phrase',
     'TC002 - US2629267 - Boolean Search - OR Search',
     'TC003 - US2629267 - Boolean Search - NOT Search',
-    'TC004 - US2629267 - Boolean Search - Fallback Logic'
+    'TC004 - US2629267 - Boolean Search - Default Search Behavior'
 )
 $existing = @()
 foreach ($t in $expectedTitles) {

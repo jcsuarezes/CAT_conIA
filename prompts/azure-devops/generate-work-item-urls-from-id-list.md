@@ -5,12 +5,11 @@ You are helping generate direct Azure DevOps web URLs for Work Items using the c
 
 Fixed configuration:
 - Organization URL: https://dev.azure.com/cat-digital
-- Organization URL used for generation: https://dev.azure.com/cat-digital/
 - Default project: Cat Digital
 - Retrieval mode: IDs-only
 
 ## Inputs
-- Organization URL (default: `https://dev.azure.com/cat-digital/`):
+- Organization URL (default: `https://dev.azure.com/cat-digital`):
 - Project (default: `Cat Digital`):
 - Work Item IDs source (`inline list` or `file path`):
 - Output file path (default on Windows: `%USERPROFILE%\\Desktop\\URL.txt`):
@@ -29,7 +28,7 @@ Fixed configuration:
 3. Generate one web URL per ID using this pattern:
    - `https://dev.azure.com/cat-digital/_workitems/edit/<ID>`
 4. Retrieve Work Item name (title) for each ID.
-4. Remove duplicates unless explicitly requested to keep them.
+5. Remove duplicates unless explicitly requested to keep them.
 5. Save output as plain text in `URL.txt`, one record per line using `|` separator:
    - `<ID>|<Name>|<URL>`
 6. Return an auditable execution summary.
@@ -48,7 +47,7 @@ Fixed configuration:
 - `<ID>|<Name>|<URL>`
 
 ### Validation Checklist
-- [ ] Organization URL is set (`https://dev.azure.com/cat-digital/`)
+- [ ] Organization URL is set (`https://dev.azure.com/cat-digital`)
 - [ ] Project is set (`Cat Digital`)
 - [ ] IDs are numeric and normalized
 - [ ] IDs-only mode respected

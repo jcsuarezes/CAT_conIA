@@ -31,11 +31,16 @@ Input safety note:
 - **Suite Resolution Rule**: If the user provides `Requirement Based Suite ID`, reuse it after validation and derive the plan from that suite.
 - **Suite Creation Rule**: If the user does not provide `Requirement Based Suite ID`, ask for `Test Plan ID` and create a Requirement Based Suite for `<USER_STORY_ID>` under that plan.
 - **Requirement Based Suite Rule**: Any target suite used by this prompt must resolve to exactly one suite and must be a Requirement Based Suite.
+- **Suite Hierarchy Rule**: Never treat a container or parent suite as the execution target for this prompt. The resolved suite must be the direct Requirement Based Suite that will receive the created Test Cases.
+- **Suite Resolution Reuse Rule**: Step 2 must use `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` as the single source for suite resolution/creation behavior. Do not duplicate or override that logic in this prompt.
 - **Requirement Mapping Rule**: If a provided suite is associated with a requirement/work item and that requirement ID is different from `<USER_STORY_ID>`, stop and request confirmation before continuing.
-- **Case Ratio**: Keep an exact 3:1 ratio of happy path scenarios to edge/error scenarios unless a specific risk clearly requires an exception.
+- **Case Ratio**: Target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set when the story supports that balance.
+- **Case Ratio Clarification**: This ratio is a suite-level guideline, not a rigid quota. Do not create extra negative or edge/error scenarios just to force the count, and never interpret the rule as 3 negative cases per happy path.
 - **Minimum Coverage**: Generate only the minimum number of test cases needed to cover the acceptance criteria, core behavior, and distinct risks.
 - **Title Format**: `TC### - US<USER_STORY_ID> - <Abbreviated User Story Title> - <Short Significant Scenario>`.
 - **Title Brevity Rule**: Abbreviate the User Story title to 3-6 words in Test Case titles, but never abbreviate the original User Story title in reporting.
+- **Title Wording Rule**: Test Case titles and the `<Short Significant Scenario>` segment must be professional and behavior-specific. Do not include generic labels such as `Happy path`, `Happy Path`, `Edge case`, `Edge Case`, `Negative case`, or similar taxonomy terms in titles.
+- **Scenario Wording Rule**: Reporting labels and scenario summaries must describe observable product behavior.
 - **Step Limits**: Max 180 characters per step action; max 220 characters per expected result.
 - **Mandatory Tooling Step**: The first step of every test case must open BRUNO or Swagger and set the request URL to `<WEBSERVICE_URL>`.
 - **Webservice URL Rule**: The URL must be complete and literal. If it contains template variables such as `{{url}}` or `${url}`, stop and request the real URL.
@@ -118,166 +123,25 @@ Conflict rule:
 - If Description or Discussion conflicts with Acceptance Criteria, follow Acceptance Criteria and record the conflict in output assumptions.
 
 ### Step 2: Resolve or Create the Requirement Based Suite
+Execute `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` with the same run inputs:
+- `User Story Work Item ID = <USER_STORY_ID>`
+- `Requirement Based Suite ID = <REQUIREMENT_BASED_SUITE_ID>` (if provided)
+- `Test Plan ID = <TEST_PLAN_ID>` (if needed)
 
-#### Branch A: User Provided `<REQUIREMENT_BASED_SUITE_ID>`
-Derive the Test Plan from the suite.
+Required handoff contract from that prompt:
+- `<PLAN_ID> = Resolved Plan ID`
+- `<TARGET_SUITE_ID> = Resolved Suite ID`
 
-1. List all Test Plans:
-```bash
-az devops invoke \
-  --org https://dev.azure.com/cat-digital \
-  --area testplan \
-  --resource plans \
-  --route-parameters project='Cat Digital' \
-  --api-version 7.1-preview \
-  --only-show-errors \
-  --output json
-```
-
-2. For each returned plan ID, try two validations for `<REQUIREMENT_BASED_SUITE_ID>`:
-  - First, list suites in the plan and search for the suite ID.
-  - If the suite is not returned by the list response, perform a direct suite lookup using `planId + suiteId`.
-
-Use this fallback-safe pattern:
-```powershell
-$plans = az devops invoke `
-  --org https://dev.azure.com/cat-digital `
-  --area testplan `
-  --resource plans `
-  --route-parameters project='Cat Digital' `
-  --api-version 7.1-preview `
-  --only-show-errors `
-  --output json | ConvertFrom-Json
-
-$matches = @()
-foreach ($plan in $plans.value) {
-  $suites = az devops invoke `
-    --org https://dev.azure.com/cat-digital `
-    --area testplan `
-    --resource suites `
-    --route-parameters project='Cat Digital' planId=$($plan.id) `
-    --api-version 7.1-preview `
-    --only-show-errors `
-    --output json | ConvertFrom-Json
-
-  $match = $suites.value | Where-Object { $_.id -eq <REQUIREMENT_BASED_SUITE_ID> }
-  
-  if (-not $match) {
-    try {
-      $directSuite = az devops invoke `
-        --org https://dev.azure.com/cat-digital `
-        --area testplan `
-        --resource suites `
-        --route-parameters project='Cat Digital' planId=$($plan.id) suiteId=<REQUIREMENT_BASED_SUITE_ID> `
-        --api-version 7.1-preview `
-        --only-show-errors `
-        --output json | ConvertFrom-Json
-
-      if ($directSuite -and $directSuite.id -eq <REQUIREMENT_BASED_SUITE_ID>) {
-        $match = @($directSuite)
-      }
-    }
-    catch {
-      # Ignore not-found responses for plans that do not own the suite.
-    }
-  }
-
-  if ($match) {
-    $matches += [PSCustomObject]@{
-      planId = $plan.id
-      planName = $plan.name
-      suite = $match
-    }
-  }
-}
-```
-
-3. Validation rules for provided suite:
-- If zero matches are found, stop and request a valid Requirement Based Suite ID.
-- If more than one match is found, stop and report the ambiguity.
-- Set `<PLAN_ID>` to the matching plan ID.
-- Set `<TARGET_SUITE_ID>` to `<REQUIREMENT_BASED_SUITE_ID>`.
-- Validate the matched suite type is Requirement Based Suite. If the returned payload does not identify it as requirement-based, stop and ask for a correct suite ID.
-- If the suite exposes a linked requirement/work item ID and it is different from `<USER_STORY_ID>`, stop and request confirmation.
-- Do not assume that listing suites by plan always returns every suite needed for validation. The direct lookup by `planId + suiteId` is mandatory before rejecting a provided suite ID.
-
-#### Branch B: User Did Not Provide `<REQUIREMENT_BASED_SUITE_ID>`
-Ask for `<TEST_PLAN_ID>` and create a Requirement Based Suite for `<USER_STORY_ID>` under that plan.
-
-1. Validate that the plan exists:
-```bash
-az devops invoke \
-  --org https://dev.azure.com/cat-digital \
-  --area testplan \
-  --resource plans \
-  --route-parameters project='Cat Digital' planId=<TEST_PLAN_ID> \
-  --api-version 7.1-preview \
-  --only-show-errors \
-  --output json
-```
-
-2. Query existing suites in the plan and check whether a Requirement Based Suite already exists for `<USER_STORY_ID>`:
-```bash
-az devops invoke \
-  --org https://dev.azure.com/cat-digital \
-  --area testplan \
-  --resource suites \
-  --route-parameters project='Cat Digital' planId=<TEST_PLAN_ID> \
-  --api-version 7.1-preview \
-  --only-show-errors \
-  --output json
-```
-
-3. Reuse rule before creation:
-- If a Requirement Based Suite already exists in the plan for `<USER_STORY_ID>`, reuse it and set `<TARGET_SUITE_ID>` to that ID.
-- If more than one Requirement Based Suite exists for `<USER_STORY_ID>`, stop and ask the user which one to reuse.
-
-4. If no Requirement Based Suite exists for `<USER_STORY_ID>`, create one under `<TEST_PLAN_ID>`:
-```powershell
-$body = @(@{
-  suiteType = 'requirementTestSuite'
-  requirementId = <USER_STORY_ID>
-}) | ConvertTo-Json -Depth 8
-
-$tmp = [System.IO.Path]::GetTempFileName() + '.json'
-[System.IO.File]::WriteAllText($tmp, $body, [System.Text.UTF8Encoding]::new($false))
-
-az devops invoke `
-  --org https://dev.azure.com/cat-digital `
-  --area testplan `
-  --resource suites `
-  --route-parameters project='Cat Digital' planId=<TEST_PLAN_ID> `
-  --http-method POST `
-  --in-file $tmp `
-  --api-version 7.1-preview `
-  --only-show-errors `
-  --output json
-```
-
-5. Creation validation rules:
-- Set `<PLAN_ID>` to `<TEST_PLAN_ID>`.
-- Set `<TARGET_SUITE_ID>` to the created suite ID.
-- Immediately verify the created suite with a direct suite lookup using `planId + suiteId`, not only with the plan suite list.
-- Verify the created suite is a Requirement Based Suite mapped to `<USER_STORY_ID>`.
-
-Direct verification command:
-```bash
-az devops invoke \
-  --org https://dev.azure.com/cat-digital \
-  --area testplan \
-  --resource suites \
-  --route-parameters project='Cat Digital' planId=<TEST_PLAN_ID> suiteId=<TARGET_SUITE_ID> \
-  --api-version 7.1-preview \
-  --only-show-errors \
-  --output json
-```
+Blocking rule:
+- If suite resolution returns ambiguity, invalid suite type, requirement mismatch, or missing output contract values, stop and resolve the issue before continuing to Step 3.
 
 ### Step 3: Design Test Scenarios
 From Acceptance Criteria first, then Description, then Discussion, design the minimum set of test cases needed.
 
 Coverage rules:
-- Generate 3 happy path scenarios and 1 edge/error scenario by default.
-- Only exceed that ratio when a specific rule, branch, or observable outcome requires it.
+- Start from the minimum viable set of scenarios needed for coverage.
+- Prefer a suite that remains predominantly happy-path oriented, aiming for an overall 3:1 balance of happy path to edge/error scenarios when that matches the distinct behaviors under test.
+- Do not add negative or edge/error scenarios only to force a numeric ratio. Add them only when they validate a distinct rule, branch, risk, or observable outcome.
 - Set `<EXPECTED_TC_COUNT>` to the designed number of test cases.
 
 For each test case:

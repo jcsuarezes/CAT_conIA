@@ -31,3 +31,10 @@ Repositorio **sin código** (solo Markdown) para reutilizar prompts en inglés o
 - No guardar `PAT` ni secretos en el repositorio.
 - Organización fija para Azure DevOps prompts: `https://dev.azure.com/cat-digital`.
 - Todo prompt nuevo debe registrarse en [catalog/index.md](catalog/index.md).
+
+## Persistencia del framework
+- Modelo principal: prompts markdown en `prompts/azure-devops/`.
+- Los scripts en `scripts/` se consideran soporte operativo o legado, no la fuente principal de reglas.
+- Evitar proliferación de scripts por caso (UI, Webservices, historia puntual); priorizar una guía reusable en prompts.
+- Si se requiere automatización, preferir un flujo reusable antes que múltiples scripts ad hoc.
+- Cualquier excepción debe quedar documentada en `changelog/prompts-history.md`.

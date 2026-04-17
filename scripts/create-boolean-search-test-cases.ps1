@@ -23,7 +23,7 @@ $testCases = @(
   @{
     TCNum = "001"
     Title = "TC001 - US2629267 - Boolean AND Search"
-    Description = "Happy Path: AND operator with multiple terms"
+    Description = "Verify AND operator with multiple terms"
     Source = "Acceptance Criteria"
     Steps = @(
       @{Action = "Open BRUNO or Swagger and set the request URL"; Expected = "BRUNO/Swagger is open, URL is loaded: $WEBSERVICE_URL"},
@@ -35,7 +35,7 @@ $testCases = @(
   @{
     TCNum = "002"
     Title = "TC002 - US2629267 - Exact Phrase Search"
-    Description = "Happy Path: Exact phrase with double quotes"
+    Description = "Verify exact phrase handling with double quotes"
     Source = "Acceptance Criteria"
     Steps = @(
       @{Action = "Open BRUNO or Swagger and set the request URL"; Expected = "BRUNO/Swagger is open, URL is loaded: $WEBSERVICE_URL"},
@@ -47,7 +47,7 @@ $testCases = @(
   @{
     TCNum = "003"
     Title = "TC003 - US2629267 - Boolean OR Search"
-    Description = "Happy Path: OR operator with multiple terms"
+    Description = "Verify OR operator with multiple terms"
     Source = "Acceptance Criteria"
     Steps = @(
       @{Action = "Open BRUNO or Swagger and set the request URL"; Expected = "BRUNO/Swagger is open, URL is loaded: $WEBSERVICE_URL"},
@@ -59,7 +59,7 @@ $testCases = @(
   @{
     TCNum = "004"
     Title = "TC004 - US2629267 - Boolean NOT Search"
-    Description = "Happy Path: NOT operator to exclude terms"
+    Description = "Verify NOT operator excludes terms"
     Source = "Acceptance Criteria"
     Steps = @(
       @{Action = "Open BRUNO or Swagger and set the request URL"; Expected = "BRUNO/Swagger is open, URL is loaded: $WEBSERVICE_URL"},
@@ -70,8 +70,8 @@ $testCases = @(
   },
   @{
     TCNum = "005"
-    Title = "TC005 - US2629267 - Fallback No Boolean Operators"
-    Description = "Edge Case: Search without booleans/quotes falls back to current logic"
+    Title = "TC005 - US2629267 - Search Without Boolean Operators"
+    Description = "Verify default search behavior without boolean operators or quotes"
     Source = "Acceptance Criteria"
     Steps = @(
       @{Action = "Open BRUNO or Swagger and set the request URL"; Expected = "BRUNO/Swagger is open, URL is loaded: $WEBSERVICE_URL"},
@@ -281,7 +281,7 @@ Write-Host "  [1] TC001: Boolean AND Search"
 Write-Host "  [2] TC002: Exact Phrase Search"
 Write-Host "  [3] TC003: Boolean OR Search"
 Write-Host "  [4] TC004: Boolean NOT Search"
-Write-Host "  [5] TC005: Fallback Logic No Operators"
+Write-Host "  [5] TC005: Search Without Boolean Operators"
 Write-Host "`nTest Cases Linked to Suite: $linkedCount" -ForegroundColor White
 Write-Host "User Story Relations Created: $relationCount" -ForegroundColor White
 Write-Host "`n🔗 Test Plan Link:" -ForegroundColor Cyan

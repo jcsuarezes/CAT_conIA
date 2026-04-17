@@ -1,5 +1,71 @@
 # Prompt History
 
+## 2026-04-16 (v1.29) — SUITE RESOLUTION REUSE ENFORCEMENT
+- **Governance updated**: `.github/copilot-instructions.md`, `prompts/azure-devops/_prompt-template.md`
+- **Framework guardrails added**:
+  - Enforced the reusable suite-resolution prompt as the source of truth for any suite discovery/reuse/creation workflow.
+  - Added template-level rules to prevent future prompts from duplicating suite-resolution logic.
+  - Standardized required suite-resolution handoff outputs: `Resolved Plan ID` and `Resolved Suite ID`.
+
+## 2026-04-16 (v1.28) — WEBSERVICES SUITE RESOLUTION EXTERNALIZATION
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Catalog updated**: `catalog/index.md`
+- **Refactor completed**:
+  - Externalized WebServices Step 2 suite-resolution logic to the reusable prompt `resolve-or-create-requirement-based-suite.md`.
+  - Replaced duplicated suite-discovery/creation instructions with a strict handoff contract (`Resolved Plan ID` and `Resolved Suite ID`).
+  - Added a blocking rule so execution cannot continue when suite resolution is ambiguous or invalid.
+
+## 2026-04-16 (v1.27) — REUSABLE SUITE RESOLUTION FLOW
+- **Prompt added**: `resolve-or-create-requirement-based-suite.md`
+- **Catalog updated**: `catalog/index.md`
+- **Capability added**:
+  - Introduced a reusable prompt-first flow to resolve or create Requirement Based Suites across different User Stories and Test Plans.
+  - Added explicit input/output contract for `Resolved Plan ID` and `Resolved Suite ID`.
+  - Standardized plan-wide resolution, direct `planId + suiteId` lookup fallback, and ambiguity handling.
+  - Enforced executable target suite validation (not container/parent) and requirement linkage checks.
+
+## 2026-04-16 (v1.26) — FRAMEWORK PERSISTENCE HARDENING
+- **Governance updated**: `.github/copilot-instructions.md`, `README.md`, `docs/operating-model.md`
+- **Persistence controls added**:
+  - Established an explicit prompt-first architecture rule.
+  - Added a script lifecycle policy to prevent story-specific script sprawl.
+  - Defined that process logic must live in prompts/docs, with scripts treated as support or legacy.
+  - Added onboarding criteria for any new automation (reusability, owner, and retirement traceability).
+
+## 2026-04-16 (v1.25) — CONTRADICTION CLEANUP
+- **Configuration updated**: `.vscode/mcp.json`, `profiles/default.md`, `docs/operating-model.md`, `catalog/index.md`
+- **Prompts updated**: `generate-work-item-urls-from-id-list.md`, `ready/generate-work-item-urls-from-id-list.quickstart.md`, `get-open-work-items-table.md`, `ready/get-open-work-items-table.quickstart.md`, `create-webservices-test-cases-from-user-story.md`
+- **Consistency fixes**:
+  - Standardized the Azure DevOps organization URL to `https://dev.azure.com/cat-digital` in active configuration and prompt defaults.
+  - Removed trailing-slash inconsistencies from the URL-generation prompt and quickstart.
+  - Aligned open-items prompts so assigned-user resolution now asks first, falls back to the profile default, and stops if no value can be resolved.
+  - Clarified that the WebServices test-case prompt must target a direct executable Requirement Based Suite rather than a parent/container suite.
+  - Replaced the misleading `Alternate project` catalog entry with a single-project statement.
+
+## 2026-04-16 (v1.24) — SCENARIO TAXONOMY NORMALIZATION
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Project artifacts updated**: Boolean-search scripts, generated docs, and execution summaries
+- **Wording normalization**:
+  - Standardized visible scenario grouping to `Core Behavior` and `Default Behavior`.
+  - Renamed the residual `Fallback Logic No Operators` title to `Search Without Boolean Operators`.
+  - Preserved technical uses of `validation` and `fallback` where they refer to implementation or operational behavior rather than test case naming.
+
+## 2026-04-16 (v1.23) — TEST CASE TITLE WORDING CLEANUP
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Project artifacts updated**: `run_tc_flow.ps1`, `scripts/create-boolean-search-test-cases.ps1`, `scripts/fix-descriptions-2655098-2655101.ps1`, generated docs and outputs
+- **Naming cleanup**:
+  - Added an explicit rule that Test Case titles must not include generic taxonomy labels such as `Happy path`, `Edge case`, or `Negative case`.
+  - Reworded existing scenario names and descriptions to use professional, behavior-specific phrasing.
+  - Cleaned historical generated artifacts so the repository no longer surfaces those labels in title-like contexts.
+
+## 2026-04-16 (v1.22) — TEST CASE RATIO CLARIFICATION
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Shared instruction updated**: `.github/copilot-instructions.md`
+- **Ratio clarification**:
+  - Reworded the 3:1 guidance so it is treated as a suite-level balance target, not as an exact quota.
+  - Explicitly forbids padding with negative or edge/error scenarios only to force counts.
+  - Clarified that the rule must never be interpreted as 3 negative test cases per happy path.
+
 ## 2026-04-16 (v1.21) — WIQL QUERY SAFETY HARDENING
 - **Prompt updated**: `wiql-queries.md`
 - **WIQL safety improvements**:
@@ -117,7 +183,7 @@
 ## 2026-04-13 (v1.7)
 - Added reusable prompt `create-webservices-test-cases-from-user-story.md` for generating Azure DevOps Test Cases from Gherkin webservices user stories.
 - Prompt accepts User Story ID and Test Plan ID as parameters; creates suite with TC### naming convention; includes step/expected result population in native Azure DevOps XML format.
-- Enforces 3:1 test case ratio (happy path:edge cases) and step/result character limits for Azure DevOps UI readability.
+- Introduced initial 3:1 happy-path to edge/error guidance and step/result character limits for Azure DevOps UI readability.
 - Registered prompt in `catalog/index.md` (Quick Access and Core Prompts).
 
 ## 2026-04-11 (v1.6)
@@ -139,7 +205,7 @@
 - Registered the quickstart in `catalog/index.md` (Quick Access and Quickstarts table).
 
 ## 2026-02-23 (v1.2)
-- Added reusable prompt `generate-work-item-urls-from-id-list.md` for generating Work Item web URLs from IDs using `https://dev.azure.com/cat-digital/` and project `cat-digital`.
+- Added reusable prompt `generate-work-item-urls-from-id-list.md` for generating Work Item web URLs from IDs using the configured Azure DevOps organization URL and the `Cat Digital` project.
 - Registered prompt in `catalog/index.md` (Quick Access and Core Prompts).
 
 ## 2026-02-23 (v1.1)

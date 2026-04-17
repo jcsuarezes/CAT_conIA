@@ -12,7 +12,7 @@ Fixed configuration:
 ## Inputs
 - Project (default: `Cat Digital`):
 - Authentication mode: Entra token or PAT alias reference
-- Assigned To filter (required prompt question, default: `profiles/default.md -> Username alias`, fallback: `@Me`):
+- Assigned To filter (required prompt question; if omitted, use `profiles/default.md -> Username alias`):
 - Additional filters (optional): Area Path, Iteration Path, Work Item Type
 - Open states (default): `New`, `Active`, `In Progress`
 - Snapshot date (default): current date in `YYYY-MM-DD`
@@ -31,7 +31,7 @@ Fixed configuration:
 ## Task
 1. Ask explicitly: `Which assigned user should be used?`.
 2. If no user is provided, use `profiles/default.md -> Username alias`.
-3. If profile alias is empty, set `Assigned To = @Me`.
+3. If profile alias is empty, ask again and do not continue until a value is provided.
 4. Validate required inputs and resolve defaults.
 5. Build WIQL for open work items only.
 6. Execute WIQL and validate whether it returned zero or more IDs explicitly.
@@ -67,7 +67,7 @@ Fixed configuration:
 ## Validation Checklist
 - [ ] Organization URL is `https://dev.azure.com/cat-digital`
 - [ ] Project is `Cat Digital` (or explicitly provided)
-- [ ] Assigned user was requested and defaulted to profile alias (or `@Me` fallback)
+- [ ] Assigned user was explicitly requested and resolved from user input or profile default
 - [ ] Closed states are excluded
 - [ ] WIQL result was validated explicitly, including zero-result cases
 - [ ] Retrieved item count matches the resolved ID set

@@ -49,6 +49,10 @@ Fixed configuration:
 	- If Webservice URL is missing, stop and request it before creating suite/test cases.
 	- For Webservices test cases, force Step 1 action/expected result to open BRUNO and load the Webservice URL.
 	- Do not apply this BRUNO/URL rule to UI or Data test cases.
+- Suite-resolution reuse rule for test case generation:
+	- If the operation resolves, reuses, or creates Azure DevOps test suites, call `prompts/azure-devops/resolve-or-create-requirement-based-suite.md`.
+	- Do not duplicate suite-resolution logic inside each test-case prompt.
+	- Require output handoff contract: `Resolved Plan ID` and `Resolved Suite ID`.
 
 ## Task
 1. Validate inputs.

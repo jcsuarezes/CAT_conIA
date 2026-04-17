@@ -10,7 +10,7 @@
 
 **Completed**:
 - [x] User Story metadata retrieved and analyzed
-- [x] Test case scenarios designed (5 cases: 4 happy path + 1 edge case)
+- [x] Test case scenarios designed (5 cases: 4 core-behavior scenarios + 1 default-behavior scenario)
 - [x] Test Plan created: `SIS - Boolean Search Test Plan` (ID: 2655035)
 - [x] Test Suite created: `Boolean Search SUITE 26.05.00` (ID: 2655041)
 - [x] Manual test case creation guide generated
@@ -40,13 +40,13 @@
 
 | # | Title | Type | Source |
 |---|-------|------|--------|
-| **001** | Boolean AND Search | Happy Path | Acceptance Criteria |
-| **002** | Exact Phrase Search | Happy Path | Acceptance Criteria |
-| **003** | Boolean OR Search | Happy Path | Acceptance Criteria |
-| **004** | Boolean NOT Search | Happy Path | Acceptance Criteria |
-| **005** | Fallback Logic No Operators | Edge Case | Acceptance Criteria |
+| **001** | Boolean AND Search | Core Behavior | Acceptance Criteria |
+| **002** | Exact Phrase Search | Core Behavior | Acceptance Criteria |
+| **003** | Boolean OR Search | Core Behavior | Acceptance Criteria |
+| **004** | Boolean NOT Search | Core Behavior | Acceptance Criteria |
+| **005** | Search Without Boolean Operators | Default Behavior | Acceptance Criteria |
 
-**Ratio**: 4 Happy Path : 1 Edge Case ✅ (meets 3:1 minimum)
+**Coverage Mix**: 4 core-behavior scenarios and 1 default-behavior scenario.
 
 ---
 
@@ -73,7 +73,7 @@ https://sis-ws-all-dev.azurewebsites.net/sis2-ws-all/services/searchresults?lang
 ## Test Case Details
 
 ### TC001: Boolean AND Search
-- **Scenario**: Happy Path - AND operator with multiple terms
+- **Scenario**: AND operator with multiple terms
 - **Steps**: 
   1. Open BRUNO/Swagger, set URL to webservice
   2. Set searchterm to: `OIL AND PUMP` (uppercase AND)
@@ -82,7 +82,7 @@ https://sis-ws-all-dev.azurewebsites.net/sis2-ws-all/services/searchresults?lang
 - **Expected**: Results matching full text search logic
 
 ### TC002: Exact Phrase Search
-- **Scenario**: Happy Path - Exact phrase with double quotes  
+- **Scenario**: Exact phrase with double quotes  
 - **Steps**:
   1. Open BRUNO/Swagger, set URL
   2. Set searchterm to: `"OIL PUMP"` (with escaped quotes in JSON)
@@ -91,7 +91,7 @@ https://sis-ws-all-dev.azurewebsites.net/sis2-ws-all/services/searchresults?lang
 - **Expected**: Exact phrase matches only
 
 ### TC003: Boolean OR Search
-- **Scenario**: Happy Path - OR operator with multiple terms
+- **Scenario**: OR operator with multiple terms
 - **Steps**:
   1. Open BRUNO/Swagger, set URL
   2. Set searchterm to: `MONITORING OR ALERT` (uppercase OR)
@@ -100,7 +100,7 @@ https://sis-ws-all-dev.azurewebsites.net/sis2-ws-all/services/searchresults?lang
 - **Expected**: Results with MONITORING or ALERT or both
 
 ### TC004: Boolean NOT Search
-- **Scenario**: Happy Path - NOT operator to exclude terms
+- **Scenario**: NOT operator to exclude terms
 - **Steps**:
   1. Open BRUNO/Swagger, set URL
   2. Set searchterm to: `OIL NOT PUMP` (uppercase NOT)
@@ -108,8 +108,8 @@ https://sis-ws-all-dev.azurewebsites.net/sis2-ws-all/services/searchresults?lang
   4. Verify exclusion logic working
 - **Expected**: OIL results without PUMP
 
-### TC005: Fallback Logic No Operators (Edge Case)
-- **Scenario**: Search without booleans/quotes falls back to current logic
+### TC005: Search Without Boolean Operators
+- **Scenario**: Search without boolean operators or quotes uses the default search behavior
 - **Steps**:
   1. Open BRUNO/Swagger, set URL
   2. Set searchterm to: `SEARCHTERM` (plain text, no operators/quotes)

@@ -25,7 +25,7 @@ Constraints:
 Task:
 1) Ask: `Which assigned user should be used?`.
 2) If omitted, use `profiles/default.md -> Username alias`.
-3) If profile alias is empty, use `Assigned To = @Me`.
+3) If profile alias is empty, ask again and do not continue until a value is provided.
 4) Validate inputs.
 5) Execute WIQL and validate whether it returned zero or more IDs explicitly.
 6) Retrieve open Work Items and validate that item count matches the resolved ID set.
@@ -48,7 +48,7 @@ Output format:
 
 ### Validation Checklist
 - [ ] Organization URL is `https://dev.azure.com/cat-digital`
-- [ ] Assigned user was requested and defaulted to profile alias (or `@Me` fallback)
+- [ ] Assigned user was explicitly requested and resolved from user input or profile default
 - [ ] Closed states are excluded
 - [ ] WIQL result was validated explicitly, including zero-result cases
 - [ ] Retrieved item count matches the resolved ID set

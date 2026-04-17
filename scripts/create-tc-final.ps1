@@ -14,7 +14,7 @@ $titles = @(
     "TC002 - US2629267 - Exact Phrase Search",
     "TC003 - US2629267 - Boolean OR Search",
     "TC004 - US2629267 - Boolean NOT Search",
-    "TC005 - US2629267 - Fallback Logic No Operators"
+    "TC005 - US2629267 - Search Without Boolean Operators"
 )
 
 Write-Host "================================================"

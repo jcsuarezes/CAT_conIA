@@ -38,7 +38,7 @@
 
 ## Test Case Specifications (Ready for Manual Entry)
 
-### TC001: Boolean AND Search - Happy Path
+### TC001: Boolean AND Search
 - **Title**: TC001 - US2629267 - Boolean AND Search
 - **Type**: Test Case
 - **Area**: Cat Digital\A - SIS\A - SIS Core Team 2
@@ -56,7 +56,7 @@
 
 ---
 
-### TC002: Exact Phrase Search - Happy Path
+### TC002: Exact Phrase Search
 - **Title**: TC002 - US2629267 - Exact Phrase Search
 - **Type**: Test Case
 
@@ -72,7 +72,7 @@
 
 ---
 
-### TC003: Boolean OR Search - Happy Path
+### TC003: Boolean OR Search
 - **Title**: TC003 - US2629267 - Boolean OR Search
 - **Type**: Test Case
 
@@ -88,7 +88,7 @@
 
 ---
 
-### TC004: Boolean NOT Search - Happy Path
+### TC004: Boolean NOT Search
 - **Title**: TC004 - US2629267 - Boolean NOT Search
 - **Type**: Test Case
 
@@ -104,8 +104,8 @@
 
 ---
 
-### TC005: Fallback Logic No Operators - Edge Case
-- **Title**: TC005 - US2629267 - Fallback Logic No Operators
+### TC005: Search Without Boolean Operators
+- **Title**: TC005 - US2629267 - Search Without Boolean Operators
 - **Type**: Test Case
 
 **Steps**:
@@ -113,10 +113,10 @@
    Expected: Service responds with 200 OK
    
 2. Submit search query: `simple search text` (no boolean operators)  
-   Expected: Service applies default fallback behavior (treat as AND)
+   Expected: Service applies the default search behavior (treat as AND)
    
-3. Verify fallback logic  
-   Expected: Results match defined fallback algorithm in US 2629267
+3. Verify default search behavior  
+   Expected: Results match the defined default algorithm in US 2629267
 
 ---
 
