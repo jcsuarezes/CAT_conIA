@@ -5,7 +5,7 @@
 - **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
 - **Knowledge base updated**: `docs/ai-known-failures.md`
 - **Coverage and execution improvements**:
-  - Clarified that the 3:1 happy-path guideline is flexible and that ratios such as `5:1` are valid when driven by distinct high-priority behaviors.
+  - Clarified that the 3:1 happy-path guideline is flexible and that ratios such as `4:1`, `5:1`, or `6:1` are valid only when driven by distinct high-priority behaviors that add real value.
   - Added an explicit rule against filler Test Cases and required priority-based follow-up reporting when more meaningful coverage remains.
   - Standardized an explicit final status message in execution-style outputs.
   - Documented the PowerShell array-materialization pitfall that can persist empty Azure DevOps Steps XML (`last='0'`) and added guardrails to reject it.

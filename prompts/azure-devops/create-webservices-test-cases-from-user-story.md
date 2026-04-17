@@ -36,7 +36,7 @@ Input safety note:
 - **Requirement Mapping Rule**: If a provided suite is associated with a requirement/work item and that requirement ID is different from `<USER_STORY_ID>`, stop and request confirmation before continuing.
 - **Case Ratio**: Target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set when the story supports that balance.
 - **Case Ratio Clarification**: This ratio is a suite-level guideline, not a rigid quota. Do not create extra negative or edge/error scenarios just to force the count, and never interpret the rule as 3 negative cases per happy path.
-- **Priority Coverage Rule**: Ratios such as `5:1` are valid when the additional cases cover distinct high-priority behaviors, acceptance criteria, or business risks.
+- **Priority Coverage Rule**: Ratios such as `4:1`, `5:1`, or `6:1` are valid only when the additional cases cover distinct high-priority behaviors, acceptance criteria, or business risks that add real value.
 - **Minimum Coverage**: Generate only the minimum number of test cases needed to cover the acceptance criteria, core behavior, and distinct risks.
 - **No Filler Rule**: Additional Test Cases are allowed only when they are priority-driven and non-duplicative. Do not add filler scenarios to satisfy a ratio, round number, or naming sequence.
 - **Title Format**: `TC### - US<USER_STORY_ID> - <Abbreviated User Story Title> - <Short Significant Scenario>`.
@@ -143,7 +143,7 @@ From Acceptance Criteria first, then Description, then Discussion, design the mi
 Coverage rules:
 - Start from the minimum viable set of scenarios needed for coverage.
 - Prefer a suite that remains predominantly happy-path oriented, aiming for an overall 3:1 balance of happy path to edge/error scenarios when that matches the distinct behaviors under test.
-- Ratios such as 5:1 are acceptable when the story has more distinct high-priority behaviors than edge/error behaviors.
+- Ratios such as 4:1, 5:1, or 6:1 are acceptable only when the story has more distinct high-priority behaviors than edge/error behaviors and those additional cases add real value.
 - Do not add negative or edge/error scenarios only to force a numeric ratio. Add them only when they validate a distinct rule, branch, risk, or observable outcome.
 - Add more Test Cases only when they remain priority-driven, non-redundant, and auditable.
 - Set `<EXPECTED_TC_COUNT>` to the designed number of test cases.

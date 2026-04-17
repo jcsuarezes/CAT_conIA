@@ -52,7 +52,7 @@ Fixed configuration:
 	- Require output handoff contract: `Resolved Plan ID` and `Resolved Suite ID`.
 	- Do not ask for sprint or iteration as direct input when a User Story is available; derive them from `System.IterationPath`.
 - Test design prioritization rule:
-	- Use the minimum viable number of test cases, but allow ratios such as 5:1 when additional cases cover distinct high-priority behaviors.
+	- Use the minimum viable number of test cases, but allow ratios such as 4:1, 5:1, or 6:1 only when additional cases cover distinct high-priority behaviors and add real value.
 	- Do not create filler test cases to satisfy a numeric target.
 	- If more priority test cases remain out of scope, state that explicitly in the final output.
 - Test Steps reliability rule:
