@@ -36,7 +36,9 @@ Input safety note:
 - **Requirement Mapping Rule**: If a provided suite is associated with a requirement/work item and that requirement ID is different from `<USER_STORY_ID>`, stop and request confirmation before continuing.
 - **Case Ratio**: Target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set when the story supports that balance.
 - **Case Ratio Clarification**: This ratio is a suite-level guideline, not a rigid quota. Do not create extra negative or edge/error scenarios just to force the count, and never interpret the rule as 3 negative cases per happy path.
+- **Priority Coverage Rule**: Ratios such as `5:1` are valid when the additional cases cover distinct high-priority behaviors, acceptance criteria, or business risks.
 - **Minimum Coverage**: Generate only the minimum number of test cases needed to cover the acceptance criteria, core behavior, and distinct risks.
+- **No Filler Rule**: Additional Test Cases are allowed only when they are priority-driven and non-duplicative. Do not add filler scenarios to satisfy a ratio, round number, or naming sequence.
 - **Title Format**: `TC### - US<USER_STORY_ID> - <Abbreviated User Story Title> - <Short Significant Scenario>`.
 - **Title Brevity Rule**: Abbreviate the User Story title to 3-6 words in Test Case titles, but never abbreviate the original User Story title in reporting.
 - **Title Wording Rule**: Test Case titles and the `<Short Significant Scenario>` segment must be professional and behavior-specific. Do not include generic labels such as `Happy path`, `Happy Path`, `Edge case`, `Edge Case`, `Negative case`, or similar taxonomy terms in titles.
@@ -141,7 +143,9 @@ From Acceptance Criteria first, then Description, then Discussion, design the mi
 Coverage rules:
 - Start from the minimum viable set of scenarios needed for coverage.
 - Prefer a suite that remains predominantly happy-path oriented, aiming for an overall 3:1 balance of happy path to edge/error scenarios when that matches the distinct behaviors under test.
+- Ratios such as 5:1 are acceptable when the story has more distinct high-priority behaviors than edge/error behaviors.
 - Do not add negative or edge/error scenarios only to force a numeric ratio. Add them only when they validate a distinct rule, branch, risk, or observable outcome.
+- Add more Test Cases only when they remain priority-driven, non-redundant, and auditable.
 - Set `<EXPECTED_TC_COUNT>` to the designed number of test cases.
 
 For each test case:
@@ -208,7 +212,9 @@ az boards work-item update \
 
 Rules for reliable rendering in Azure Test Plans:
 - Keep attributes quoted in XML, for example: `<steps id='0' ...>` and `<step id='2' type='ActionStep'>`.
+- Materialize `$stepList` as an explicit array variable before calling `BuildStepsXml`; do not pass an indexed or lazily evaluated collection directly into the helper.
 - Do not rely on `az devops invoke --http-method PATCH` for `Microsoft.VSTS.TCM.Steps` in this environment.
+- After updating the field, read it back and reject values such as `<steps id='0' last='0'></steps>` even if the command exit code is `0`.
 
 Manual option (only if update fails):
 1. Open the Test Case work item in Azure DevOps.
@@ -314,6 +320,8 @@ EXPECTED TC COUNT: <EXPECTED_TC_COUNT>
 TEST CASES:
 - TC001 ...
 - TC002 ...
+FINAL STATUS: COMPLETED | COMPLETED WITH ASSUMPTIONS | BLOCKED
+PRIORITY FOLLOW-UP: <NONE or concise statement of additional high-priority Test Cases that would add value without filler>
 ```
 
 ## Validation Checklist

@@ -20,6 +20,17 @@ Documentar errores repetibles, limites conocidos y patrones operativos validados
 - Para rutas con backslashes en JSON, usar forward slashes o escapar adecuadamente.
 - No confiar en un HTTP 200 como prueba suficiente en operaciones de escritura; verificar con una lectura posterior.
 
+### `Microsoft.VSTS.TCM.Steps` renderiza vacio en Test Plans
+- Sintoma: el campo `Microsoft.VSTS.TCM.Steps` queda poblado en el Work Item, pero Azure Test Plans no muestra `Actions` ni `Expected Results`.
+- Causa confirmada: generar XML con `ValidateStep`, atributos sin comillas persistidas, o sin nodo `<description/>` puede dejar el grid vacio aunque el update devuelva exito.
+- Patron validado: usar `az boards work-item update --field "Microsoft.VSTS.TCM.Steps=<xml>"` con XML de este estilo:
+	- `<steps id='0' last='N'>...`
+	- `<step id='2' type='ActionStep'>...<description/></step>`
+- Verificacion obligatoria: despues del update, leer el campo y validar que siga conteniendo `type='ActionStep'`, atributos con comillas simples y al menos un `<description/>`.
+- No considerar valido un update de Steps solo porque el texto incluya la URL o el contenido esperado; validar tambien compatibilidad de renderizado.
+- Riesgo adicional confirmado en PowerShell: pasar expresiones indexadas o colecciones no materializadas directamente al helper de XML puede terminar en `$Steps.Count = 0` y persistir `<steps id='0' last='0'></steps>`.
+- Mitigacion: materializar siempre la lista de pasos en una variable array explicita antes de llamar al generador XML y rechazar cualquier readback vacio o con `last='0'`.
+
 ## Mantenimiento del repo
 - Cuando se descubra un fallo nuevo y repetible, actualizar primero el prompt afectado o la plantilla compartida.
 - Registrar el cambio en `changelog/prompts-history.md` con fecha, causa y correccion.

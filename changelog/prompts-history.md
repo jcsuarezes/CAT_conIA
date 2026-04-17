@@ -1,5 +1,27 @@
 # Prompt History
 
+## 2026-04-16 (v1.31) — PRIORITY COVERAGE + FINALIZATION HARDENING
+- **Shared instructions updated**: `.github/copilot-instructions.md`, `prompts/azure-devops/_prompt-template.md`
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Knowledge base updated**: `docs/ai-known-failures.md`
+- **Coverage and execution improvements**:
+  - Clarified that the 3:1 happy-path guideline is flexible and that ratios such as `5:1` are valid when driven by distinct high-priority behaviors.
+  - Added an explicit rule against filler Test Cases and required priority-based follow-up reporting when more meaningful coverage remains.
+  - Standardized an explicit final status message in execution-style outputs.
+  - Documented the PowerShell array-materialization pitfall that can persist empty Azure DevOps Steps XML (`last='0'`) and added guardrails to reject it.
+
+## 2026-04-16 (v1.30) — STEPS RENDERING ROOT-CAUSE FIX
+- **Operational artifacts updated**: `run_tc_flow.ps1`, `docs/ai-known-failures.md`
+- **Confirmed failure mode**:
+  - The execution flow wrote `Microsoft.VSTS.TCM.Steps` in a shape that persisted text but did not render `Actions` and `Expected Results` in Azure Test Plans.
+  - The failing pattern used `ValidateStep`-style XML and insufficient render-compatibility verification.
+- **Corrections applied**:
+  - Standardized the reusable PowerShell generator to emit `ActionStep` XML with quoted attributes and `<description/>` nodes.
+  - Switched the step update path to the validated `az boards work-item update --field` pattern.
+  - Removed the temporary seeded-test-case shortcut from the flow.
+  - Hardened suite membership verification to recursively detect linked Test Case IDs from the returned payload.
+  - Aligned comments retrieval to the preview API and default comments scope used by the prompt.
+
 ## 2026-04-16 (v1.29) — SUITE RESOLUTION REUSE ENFORCEMENT
 - **Governance updated**: `.github/copilot-instructions.md`, `prompts/azure-devops/_prompt-template.md`
 - **Framework guardrails added**:

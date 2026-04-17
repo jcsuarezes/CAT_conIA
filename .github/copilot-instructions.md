@@ -37,6 +37,7 @@ These instructions apply to all generated markdown prompts under `prompts/azure-
 - Keep prompts in English.
 - Use sections: Context, Inputs, Constraints, Task, Output Format, Validation Checklist.
 - Return auditable output and explicit validation checks.
+- End execution-oriented outputs with an explicit final status message that states whether the run finished successfully, finished with assumptions, or stopped with blockers.
 
 ## Framework persistence standard
 - Keep process logic in prompt files and shared docs, not duplicated across many scripts.
@@ -67,6 +68,8 @@ Do not create extra scenarios when they do not validate a new rule, branch, or o
 As a general rule, target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set.
 Treat this as a coverage-balancing guideline, not as a rigid per-scenario quota. Do not add negative or edge/error cases only to force the count.
 Adjust the ratio when the minimum viable coverage is achieved with fewer edge/error scenarios, or when a specific risk, complexity, or criticality clearly requires additional coverage.
+Ratios such as 5:1 are valid when the additional cases are high-priority, non-duplicative, and driven by distinct business risk or acceptance-criteria coverage.
+Prefer additional priority test cases over filler when the story exposes more than three meaningful happy-path or business-critical behaviors.
 Generated test cases must be stored in their corresponding folders based on User Story type:
 - `outputs/test-cases/webservices/` for Webservices stories
 - `outputs/test-cases/ui/` for UI stories
