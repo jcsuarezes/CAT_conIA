@@ -6,8 +6,8 @@ Use this ready-to-run prompt in your assistant.
 You are helping retrieve Azure DevOps Work Items with concise, auditable output.
 
 Inputs:
-- Organization URL: https://dev.azure.com/
-- Project (must be one of: `cat-digital` | `cat-digital`): cat-digital
+- Organization URL: https://dev.azure.com/cat-digital
+- Project (must be: `Cat Digital`): Cat Digital
 - Authentication mode: PAT alias reference `AZDO_PAT_MAIN`
 - Retrieval mode: ids
 - IDs: 12345, 12346, 12347
@@ -18,13 +18,16 @@ Constraints:
 - Do not expose secrets or tokens.
 - Validate missing inputs before executing.
 - Prefer minimal field set for performance.
-- Reject the request if `Project` is not `cat-digital` or `cat-digital`.
+- Reject the request if `Project` is not `Cat Digital`.
 - Final deliverable must be plain text content intended for a `.txt` file.
 - Save output to `outputs/<output-file-name>.txt`.
+- For Azure DevOps CLI retrievals based on `az boards work-item show`, do not combine `--fields` with `--expand`.
+- If a specific field such as `System.WorkItemType` is required, prefer `az boards work-item show --expand fields -o json` and extract the value from `fields["<FieldName>"]`.
+- Do not treat empty stdout as success by itself; validate either the parsed JSON payload or an explicit query result.
 
 Task:
 1) Confirm missing parameters.
-2) Retrieve work items by IDs.
+2) Retrieve work items by IDs using a validated Azure DevOps CLI pattern.
 3) Prepare a text report with summary and table content.
 4) Save report as a `.txt` file in the output folder.
 5) Add a short risk/consistency check.
@@ -44,11 +47,12 @@ Output format:
 - Full path: `outputs/<output-file-name>.txt`
 
 ### Validation Checklist
-- [ ] Project is allowed (`cat-digital` or `cat-digital`)
+- [ ] Project is allowed (`Cat Digital`)
 - [ ] Inputs complete
 - [ ] No secrets displayed
 - [ ] Results mapped to requested fields
 - [ ] Duplicates removed
 - [ ] Request executed by IDs only
+- [ ] Azure DevOps CLI retrieval pattern validated
 - [ ] `.txt` file generated in output folder
 ---

@@ -122,10 +122,27 @@
 
 ## Manual Creation Instructions
 
+### Important: Select the Correct Target Suite
+
+Use this rule before creating any test case:
+- If a suite is a container/parent, do not create test cases there.
+- Create test cases only in the final target suite for execution.
+
+Hierarchy example to avoid confusion:
+- Parent suite (container): 2654622
+- Target suite (where test cases must be created): 2664203
+
+Quick validation before clicking "+ New test case":
+- Confirm current suite ID in URL parameter `suiteId`.
+- Confirm suite name/title matches the test scope for your user story.
+- If you see `suiteId=2654622`, switch to `suiteId=2664203` (or the intended child suite) before creating test cases.
+
 ### Method 1: Via Test Plan UI (Recommended - 15 minutes)
 
 1. **Open Test Plan**:  
    https://dev.azure.com/cat-digital/Cat%20Digital/_testplans/define?planId=2655035&suiteId=2655041
+
+   For the current scenario with nested suites, open the same Test Plan but ensure `suiteId` points to the target child suite where test cases belong (example: `suiteId=2664203`), not the parent container suite (`suiteId=2654622`).
 
 2. **For each of TC001-TC005**:
    - Click "+ New test case" in the suite

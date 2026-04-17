@@ -6,8 +6,8 @@ Use this ready-to-run prompt in your assistant.
 You are applying controlled updates to Azure DevOps Work Items and must provide clear before/after traceability.
 
 Inputs:
-- Organization URL: https://dev.azure.com/
-- Project (must be one of: `cat-digital` | `cat-digital`): cat-digital
+- Organization URL: https://dev.azure.com/cat-digital
+- Project (must be: `Cat Digital`): Cat Digital
 - Authentication mode: PAT alias reference `AZDO_PAT_MAIN`
 - Work item IDs: 12345, 12346
 - Intended updates (field/value pairs):
@@ -23,7 +23,7 @@ Constraints:
 - Validate allowed fields before proposing update.
 - Batch related field changes per work item.
 - If any field is invalid, stop and report.
-- Reject the request if `Project` is not `cat-digital` or `cat-digital`.
+- Reject the request if `Project` is not `Cat Digital`.
 - Final deliverable must be plain text content intended for a `.txt` file.
 - Save output to `outputs/<output-file-name>.txt`.
 
@@ -50,7 +50,7 @@ Output format:
 - Full path: `outputs/<output-file-name>.txt`
 
 ### Validation Checklist
-- [ ] Project is allowed (`cat-digital` or `cat-digital`)
+- [ ] Project is allowed (`Cat Digital`)
 - [ ] IDs valid
 - [ ] Fields valid
 - [ ] No secret leakage

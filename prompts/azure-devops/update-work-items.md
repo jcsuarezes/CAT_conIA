@@ -4,13 +4,13 @@
 You are applying controlled updates to Azure DevOps Work Items and must provide clear before/after traceability.
 
 Fixed configuration:
-- Organization URL: https://dev.azure.com/
+- Organization URL: https://dev.azure.com/cat-digital
 - Default project: Cat Digital
-- Allowed projects: cat-digital, cat-digital
+- Allowed projects: Cat Digital
 - Output folder: outputs
 
 ## Inputs
-- Project (must be one of: `cat-digital` | `cat-digital`):
+- Project (must be: `Cat Digital`):
 - Authentication mode: Entra token or PAT alias reference
 - Work item IDs:
 - Intended updates (field/value pairs):
@@ -23,7 +23,7 @@ Fixed configuration:
 - Validate allowed fields before proposing update.
 - Batch related field changes per work item.
 - If any field is invalid, stop and report.
-- Reject the request if `Project` is not `cat-digital` or `cat-digital`.
+- Reject the request if `Project` is not `Cat Digital`.
 - Final deliverable must be plain text content intended for a `.txt` file.
 - Save output to `outputs/<output-file-name>.txt`.
 
@@ -50,7 +50,7 @@ Fixed configuration:
 - Full path: `outputs/<output-file-name>.txt`
 
 ### Validation Checklist
-- [ ] Project is allowed (`cat-digital` or `cat-digital`)
+- [ ] Project is allowed (`Cat Digital`)
 - [ ] IDs valid
 - [ ] Fields valid
 - [ ] No secret leakage

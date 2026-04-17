@@ -4,14 +4,14 @@
 You are helping generate direct Azure DevOps web URLs for Work Items using the configured organization.
 
 Fixed configuration:
-- Organization URL: https://dev.azure.com/
+- Organization URL: https://dev.azure.com/cat-digital
 - Organization URL used for generation: https://dev.azure.com/cat-digital/
 - Default project: Cat Digital
 - Retrieval mode: IDs-only
 
 ## Inputs
 - Organization URL (default: `https://dev.azure.com/cat-digital/`):
-- Project (default: `cat-digital`):
+- Project (default: `Cat Digital`):
 - Work Item IDs source (`inline list` or `file path`):
 - Output file path (default on Windows: `%USERPROFILE%\\Desktop\\URL.txt`):
 - Keep duplicates (`yes` or `no`, default: `no`):
@@ -49,7 +49,7 @@ Fixed configuration:
 
 ### Validation Checklist
 - [ ] Organization URL is set (`https://dev.azure.com/cat-digital/`)
-- [ ] Project is set (`cat-digital`)
+- [ ] Project is set (`Cat Digital`)
 - [ ] IDs are numeric and normalized
 - [ ] IDs-only mode respected
 - [ ] Name and ID included in output

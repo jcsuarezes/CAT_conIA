@@ -6,8 +6,8 @@ Use this ready-to-run prompt in your assistant.
 You are formatting and injecting structured markdown content into Azure DevOps work item text fields.
 
 Inputs:
-- Organization URL: https://dev.azure.com/
-- Project: cat-digital
+- Organization URL: https://dev.azure.com/cat-digital
+- Project: Cat Digital
 - Target work item IDs: 12345
 - Target field: System.Description
 - Data source rows (raw):

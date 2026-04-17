@@ -1,5 +1,55 @@
 # Prompt History
 
+## 2026-04-16 (v1.21) — WIQL QUERY SAFETY HARDENING
+- **Prompt updated**: `wiql-queries.md`
+- **WIQL safety improvements**:
+  - Added explicit anti-ambiguity rules so partial or multi-meaning filters must be documented or split into an alternate query.
+  - Added validated WIQL examples for open-items and assignee-based queries.
+  - Standardized default ordering guidance and stricter assumptions reporting.
+- **Shared guidance alignment**:
+  - Linked the prompt explicitly to `docs/validated-command-patterns.md` so WIQL generation follows the same repo-wide validation model used by retrieval prompts.
+
+## 2026-04-16 (v1.20) — VALIDATED COMMAND PATTERNS + OPEN ITEMS HARDENING
+- **Docs added**: `docs/validated-command-patterns.md`
+- **Prompts updated**: `_prompt-template.md`, `get-open-work-items-table.md`, `get-open-work-items-by-assignee-daily.md`
+- **Quickstarts updated**: `ready/get-open-work-items-table.quickstart.md`
+- **Shared guidance**:
+  - Added a reusable command-pattern guide for Azure DevOps reads, WIQL flows, writes, and post-write verification.
+  - Linked the shared guide from the base prompt template and README.
+- **Open items hardening**:
+  - Added explicit validation that WIQL zero-result cases are handled as valid outcomes rather than silent failures.
+  - Added count-matching validation between WIQL ID results and retrieved work item payloads before rendering output.
+
+## 2026-04-16 (v1.19) — WEBSERVICES PROMPT SAFETY CONSOLIDATION
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Safety consolidation**:
+  - Replaced the long ad hoc limitations block with a compact `Execution Safety Profile` aligned to `docs/ai-known-failures.md`.
+  - Added an explicit operational safety rule so the prompt uses validated Azure DevOps CLI patterns instead of repeating known-bad retries.
+  - Added retrieval guardrails for `az boards work-item show` to avoid invalid `--fields` + `--expand` combinations and false success from empty stdout.
+- **Maintenance cleanup**:
+  - Renamed the implementation section to `Implementation Guardrails` while preserving the verified PowerShell practices already used by this repo.
+
+## 2026-04-16 (v1.18) — CONFIG NORMALIZATION + QUICKSTART HARDENING
+- **Prompts updated**: `update-work-items.md`, `inject-table-values.md`, `wiql-queries.md`, `generate-work-item-urls-from-id-list.md`
+- **Quickstarts updated**: `ready/get-work-items.quickstart.md`, `ready/update-work-items.quickstart.md`, `ready/inject-table-values.quickstart.md`, `ready/generate-work-item-urls-from-id-list.quickstart.md`
+- **Configuration normalization**:
+  - Standardized fixed organization URL to `https://dev.azure.com/cat-digital` across the remaining Azure DevOps prompts and quickstarts that still used the generic root URL.
+  - Standardized project naming to `Cat Digital` in prompts and quickstarts that still used `cat-digital` as the project label.
+- **Retrieval hardening**:
+  - Propagated the validated `az boards work-item show` guidance into the get-work-items quickstart to prevent invalid `--fields` + `--expand` combinations and false positives from empty stdout.
+- **Documentation**:
+  - Added visible repo documentation for known AI and Azure DevOps CLI failures in `docs/ai-known-failures.md` and linked it from `README.md`.
+
+## 2026-04-16 (v1.17) — RETRIEVAL PATTERN HARDENING
+- **Prompts updated**: `_prompt-template.md`, `get-work-items.md`
+- **Azure DevOps CLI retrieval guardrails**:
+  - Added explicit rule to avoid combining `--fields` with `--expand` in `az boards work-item show`.
+  - Standardized the preferred retrieval pattern for field reads: use `--expand fields -o json` and extract values from the `fields` object.
+  - Added validation rule that empty stdout is not sufficient to claim success when the CLI exits with code `0`.
+- **Configuration cleanup**:
+  - Standardized fixed organization URL to `https://dev.azure.com/cat-digital` in the shared template and get-work-items prompt.
+  - Standardized allowed/default project naming to `Cat Digital` in `get-work-items.md`.
+
 ## 2026-04-14 (v1.16) — STEPS RENDERING + EXECUTION HARDENING
 - **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
 - **Step population fix**:

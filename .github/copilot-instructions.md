@@ -59,6 +59,17 @@ Generated test cases must be stored in their corresponding folders based on User
 - `outputs/test-cases/ui/` for UI stories
 - `outputs/test-cases/data/` for Data stories
 
+### Test Suite selection rule (general context)
+
+When creating or guiding the creation of Test Case work items in Azure DevOps Test Plans:
+- Always distinguish between container/parent suites and executable target child suites.
+- Never create Test Cases in the container/parent suite when a child suite is intended.
+- Always validate the destination `suiteId` before creation.
+- If hierarchy is ambiguous, ask explicitly which target suite ID must receive the Test Cases.
+- In instructions and outputs, explicitly state both IDs when relevant:
+   - Parent/container suite ID
+   - Target child suite ID (creation destination)
+
 - Happy path scenarios
 - Edge cases (e.g., missing inputs, invalid IDs, no access to organization/project)
 - Error scenarios (e.g., API failures, permission issues)

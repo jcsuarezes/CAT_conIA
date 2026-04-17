@@ -4,13 +4,13 @@
 You are formatting and injecting structured markdown content (tables/checklists) into Azure DevOps work item text fields.
 
 Fixed configuration:
-- Organization URL: https://dev.azure.com/
+- Organization URL: https://dev.azure.com/cat-digital
 - Default project: Cat Digital
-- Allowed projects: cat-digital, cat-digital
+- Allowed projects: Cat Digital
 - Output folder: outputs
 
 ## Inputs
-- Project (must be one of: `cat-digital` | `cat-digital`):
+- Project (must be: `Cat Digital`):
 - Target work item IDs:
 - Target field (for example: `System.Description` or comments):
 - Table content (required, markdown table):
@@ -30,7 +30,7 @@ Fixed configuration:
 - Output valid markdown only.
 - Avoid HTML unless explicitly requested.
 - Keep table width practical and readable.
-- Reject the request if `Project` is not `cat-digital` or `cat-digital`.
+- Reject the request if `Project` is not `Cat Digital`.
 - Reject the request if `Table content` is missing or not a valid markdown table.
 - Final deliverable must be plain text content intended for a `.txt` file.
 - Save output to `outputs/<output-file-name>.txt`.
@@ -72,7 +72,7 @@ Checklist:
 - Truncation risks:
 
 ### Validation Checklist
-- [ ] Project is allowed (`cat-digital` or `cat-digital`)
+- [ ] Project is allowed (`Cat Digital`)
 - [ ] Table content provided
 - [ ] Table markdown structure valid
 - [ ] Required columns present

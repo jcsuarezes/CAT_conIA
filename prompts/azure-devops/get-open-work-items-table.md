@@ -20,11 +20,13 @@ Fixed configuration:
 ## Constraints
 - Do not expose secrets or tokens.
 - Validate missing inputs before executing.
+- Follow shared command guidance in `docs/validated-command-patterns.md`.
 - Exclude closed states (`Closed`, `Done`, `Resolved`, `Removed`).
 - Use only auditable fields in output.
 - Render results as a markdown table.
 - Save a persistent daily snapshot file using date suffix.
 - If IDs are provided manually for any post-filtering step, validate they are numeric.
+- Do not treat empty stdout as success by itself; validate the WIQL result set and the returned work item payload.
 
 ## Task
 1. Ask explicitly: `Which assigned user should be used?`.
@@ -32,17 +34,19 @@ Fixed configuration:
 3. If profile alias is empty, set `Assigned To = @Me`.
 4. Validate required inputs and resolve defaults.
 5. Build WIQL for open work items only.
-6. Retrieve matching work items with fields:
+6. Execute WIQL and validate whether it returned zero or more IDs explicitly.
+7. Retrieve matching work items with fields:
    - `System.Id`
    - `System.WorkItemType`
    - `System.Title`
    - `System.State`
    - `System.AssignedTo`
    - `System.ChangedDate`
-7. Render a markdown table sorted by `System.ChangedDate` descending.
-8. Save the same content to a daily file:
+8. Validate that the retrieved item count matches the resolved ID set before rendering output.
+9. Render a markdown table sorted by `System.ChangedDate` descending.
+10. Save the same content to a daily file:
    - `outputs/daily/open-work-items-<YYYY-MM-DD>.md`
-9. Return summary counts and file path.
+11. Return summary counts and file path.
 
 ## Output Format
 ### Summary
@@ -65,6 +69,8 @@ Fixed configuration:
 - [ ] Project is `Cat Digital` (or explicitly provided)
 - [ ] Assigned user was requested and defaulted to profile alias (or `@Me` fallback)
 - [ ] Closed states are excluded
+- [ ] WIQL result was validated explicitly, including zero-result cases
+- [ ] Retrieved item count matches the resolved ID set
 - [ ] Output is a markdown table
 - [ ] Daily snapshot file was generated with today date
 - [ ] No secrets were displayed

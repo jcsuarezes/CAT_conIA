@@ -40,19 +40,22 @@ Input safety note:
 - **Mandatory Tooling Step**: The first step of every test case must open BRUNO or Swagger and set the request URL to `<WEBSERVICE_URL>`.
 - **Webservice URL Rule**: The URL must be complete and literal. If it contains template variables such as `{{url}}` or `${url}`, stop and request the real URL.
 - **Secrets Rule**: Never include real tokens, PAT values, or secrets.
+- **Operational Safety Rule**: Follow the validated Azure DevOps CLI patterns documented in `docs/ai-known-failures.md`. If a command path is known to be fragile in this environment, use the documented workaround instead of retrying the same invalid pattern.
 
-## Known Limitations & Workarounds
-- **Azure DevOps CLI Work Item Route Bug**: `az devops invoke --resource workitems` may fail with `KeyError: 'type'` in azure-devops CLI extension v1.0.2.
-- **Azure DevOps CLI Steps PATCH Bug**: `az devops invoke --http-method PATCH` for `Microsoft.VSTS.TCM.Steps` may fail with `KeyError: 'type'` in the same extension version.
-- **Comments API Instability**: `wit/comments` with `api-version 7.1-preview.4` may fail in some environments.
-- **URL Shell Parsing Risk**: URLs containing `&` can be truncated if passed inline in shell commands.
-- **Steps Renderer Compatibility**: If steps XML is stored with unquoted attributes (for example `id=0`), Azure Test Plans may not render the Steps grid.
-- **Workaround**:
-  1. Prefer `az boards work-item create` for Test Case creation when possible.
+## Execution Safety Profile
+- **Shared guidance source**: `docs/ai-known-failures.md`
+- **Known fragile paths in this environment**:
+  1. `az devops invoke --resource workitems` may fail with `KeyError: 'type'` in azure-devops CLI extension v1.0.2.
+  2. `az devops invoke --http-method PATCH` for `Microsoft.VSTS.TCM.Steps` may fail with the same route bug.
+  3. `wit/comments` with `api-version 7.1-preview.4` may fail in some environments.
+  4. URLs containing `&` can be truncated if passed inline in shell commands.
+  5. Azure Test Plans may not render the Steps grid if XML attributes are unquoted.
+- **Validated patterns for this prompt**:
+  1. Prefer `az boards work-item create` for Test Case creation.
   2. Prefer `az boards work-item update --field "Microsoft.VSTS.TCM.Steps=<xml>"` for step population.
-  3. Use PowerShell variables or temp files for long URLs and XML payloads; avoid inline concatenation for URLs with `&`.
-  4. If comments retrieval fails, continue with Acceptance Criteria and Description and report comments as unavailable.
-  5. Always verify write operations with an immediate read operation.
+  3. Use PowerShell variables or temp files for long URLs and XML payloads.
+  4. Continue with Acceptance Criteria and Description if comments retrieval fails, and record `COMMENTS_STATUS=UNAVAILABLE`.
+  5. Verify every write operation with an immediate read.
 
 ## Task
 
@@ -74,6 +77,10 @@ az boards work-item show \
   --only-show-errors \
   --output json
 ```
+
+Retrieval guardrail:
+- Do not add `--fields` to this command when using `--expand`.
+- Do not treat empty stdout as success; validate the returned JSON payload.
 
 Retrieve discussion/comments as well:
 ```bash
@@ -472,9 +479,9 @@ TEST CASES:
 - **Silent Failures**: Treat HTTP 200 as insufficient proof for write operations. Always verify with a read.
 - **Manual Fallback**: If automation fails because of Azure DevOps CLI limitations, continue with documented manual UI steps instead of inventing unsupported commands.
 
-## PowerShell Best Practices (For Implementation)
+## Implementation Guardrails
 - **JSON Temp Files**: Use `[System.IO.File]::WriteAllText($path, $content, [System.Text.UTF8Encoding]::new($false))` for JSON payloads to avoid UTF-8 BOM issues.
 - **Error Handling**: Check both command failure and response content.
 - **Verification**: Immediately run a GET after every POST or PATCH.
 - **Output Management**: Redirect large command output to files when needed to avoid terminal truncation.
-- **Known Bugs**: Do not rely on `az devops invoke --resource workitems` or steps PATCH when the environment reproduces `KeyError: 'type'`.
+- **Known Route Bugs**: Do not rely on `az devops invoke --resource workitems` or steps PATCH when the environment reproduces `KeyError: 'type'`.

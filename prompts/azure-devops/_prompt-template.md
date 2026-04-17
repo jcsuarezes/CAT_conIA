@@ -4,7 +4,7 @@
 You are helping with Azure DevOps work item operations.
 
 Fixed configuration:
-- Organization URL: https://dev.azure.com/
+- Organization URL: https://dev.azure.com/cat-digital
 - Default project: Cat Digital
 
 ## Inputs
@@ -40,6 +40,10 @@ Fixed configuration:
 - Do not expose secrets or tokens.
 - Validate missing inputs before executing.
 - Keep output concise and auditable.
+- Follow shared command guidance in `docs/validated-command-patterns.md` before using Azure DevOps CLI shortcuts.
+- When using Azure DevOps CLI retrieval commands, prefer validated command patterns over minimal-output shortcuts.
+- For `az boards work-item show`, do not combine `--fields` with `--expand`; retrieve with `--expand fields -o json` and extract required values from the `fields` object.
+- Treat empty stdout as unvalidated even when exit code is `0`; inspect the payload or query result before concluding success.
 - Webservices-only rule for test case generation:
 	- If the request is to create test cases for User Story type Webservices, require Webservice URL as mandatory input.
 	- If Webservice URL is missing, stop and request it before creating suite/test cases.
@@ -67,6 +71,7 @@ Fixed configuration:
 - [ ] Inputs complete
 - [ ] No secrets displayed
 - [ ] Output validated
+- [ ] Azure DevOps CLI pattern validated for the requested operation
 
 ---
 

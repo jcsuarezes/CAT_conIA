@@ -13,6 +13,8 @@ Repositorio **sin código** (solo Markdown) para reutilizar prompts en inglés o
 - [Prompts Azure DevOps](prompts/azure-devops)
 - [Perfil por defecto](profiles/default.md)
 - [Modelo operativo](docs/operating-model.md)
+- [Fallos conocidos de IA y CLI](docs/ai-known-failures.md)
+- [Patrones validados de comandos](docs/validated-command-patterns.md)
 - [Seguridad](docs/security.md)
 - [Historial](changelog/prompts-history.md)
 
@@ -27,5 +29,5 @@ Repositorio **sin código** (solo Markdown) para reutilizar prompts en inglés o
 - Prompts en inglés.
 - Documentación operativa en español.
 - No guardar `PAT` ni secretos en el repositorio.
-- Organización fija para Azure DevOps prompts: `https://dev.azure.com/`.
+- Organización fija para Azure DevOps prompts: `https://dev.azure.com/cat-digital`.
 - Todo prompt nuevo debe registrarse en [catalog/index.md](catalog/index.md).
