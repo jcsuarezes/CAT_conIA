@@ -20,6 +20,7 @@ Fixed configuration:
 ## Constraints
 - Do not expose secrets or tokens.
 - Validate missing inputs before executing.
+- During execution, ask required inputs one at a time and do not batch multiple input questions in a single message.
 - Follow shared command guidance in `docs/validated-command-patterns.md`.
 - Exclude closed states (`Closed`, `Done`, `Resolved`, `Removed`).
 - Use only auditable fields in output.

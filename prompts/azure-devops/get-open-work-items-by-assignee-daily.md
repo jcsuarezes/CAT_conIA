@@ -18,6 +18,7 @@ Fixed configuration:
 ## Constraints
 - Do not expose secrets or tokens.
 - Do not assume missing required inputs; ask explicitly.
+- During execution, ask required inputs one at a time and do not batch multiple input questions in a single message.
 - Use official Azure DevOps terminology.
 - Follow shared command guidance in `docs/validated-command-patterns.md`.
 - Retrieval mode exception: WIQL is allowed for this prompt because filtering by assignee and open states is explicitly required.

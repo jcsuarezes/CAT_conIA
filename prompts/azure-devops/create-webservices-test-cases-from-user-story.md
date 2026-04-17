@@ -9,6 +9,11 @@ Use the User Story as the source of truth for title, area, and iteration. Use an
 - **Requirement Based Suite ID**: Optional numeric ID of an existing Requirement Based Suite that will receive the generated test cases.
 - **Test Plan ID**: Required only when the user does not provide `Requirement Based Suite ID`. This Test Plan will be used to create a new Requirement Based Suite for the User Story.
 - **Webservice URL**: Full literal API URL under test (example: `https://host/api/resource`).
+- **HTTPS Request Type**: Required HTTP method for the endpoint under test. Allowed values: `GET`, `POST`, `PUT`, `DELETE`.
+- **Accept Header**: Required literal value for the `Accept` header sent with the request (example: `application/iecontentattribute-v4+json`).
+- **Authorization Header**: Required literal value for the `Authorization` header sent with the request (example: `Bearer Token Dealer`). Suggestion: obtain the header from the browser network trace, then provide a masked or descriptive value instead of the real secret.
+- **Response Attribute Verification**: Required expected attribute checks inside the response. Ask the user explicitly which objects and fields must be validated. Example: `medias must contain mediaNumber, revisionNumber, title, terminationDate; languages must contain availableLanguage, language, latest`.
+- **Request Body**: Required only when `HTTPS Request Type` is `POST`, `PUT`, or `DELETE`. Use the literal payload that must be sent to the endpoint.
 - **Discussion/Comments Scope**: Number of latest comments to evaluate. Default: `20`.
 
 Input safety note:
@@ -20,6 +25,7 @@ Input safety note:
 - **Language**: English for all prompt content, test case titles, steps, and expected results.
 - **Organization URL**: `https://dev.azure.com/cat-digital`
 - **Project**: `Cat Digital`
+- **Execution Input Mode Rule**: During execution, ask required inputs one at a time and do not batch multiple questions in one message.
 - **Terminology**: Use official Azure DevOps terms only: Work Item, ID, Requirement Based Suite, Test Case, Test Plan, WIQL.
 - **ID Validation**: Validate every provided ID is numeric before any API call.
 - **Source of Truth**:
@@ -44,9 +50,15 @@ Input safety note:
 - **Title Wording Rule**: Test Case titles and the `<Short Significant Scenario>` segment must be professional and behavior-specific. Do not include generic labels such as `Happy path`, `Happy Path`, `Edge case`, `Edge Case`, `Negative case`, or similar taxonomy terms in titles.
 - **Scenario Wording Rule**: Reporting labels and scenario summaries must describe observable product behavior.
 - **Step Limits**: Max 180 characters per step action; max 220 characters per expected result.
+- **Step Count Rule**: Do not cap test cases at 3 steps. Use as many action/expected result pairs as needed to cover acceptance criteria and distinct risks without adding filler.
 - **Mandatory Tooling Step**: The first step of every test case must open BRUNO or Swagger and set the request URL to `<WEBSERVICE_URL>`.
+- **HTTP Method Rule**: Always request and use `<HTTPS_REQUEST_TYPE>` as one of `GET`, `POST`, `PUT`, or `DELETE`.
+- **Accept Header Rule**: Always request and use `<ACCEPT_HEADER>` as the literal `Accept` header value for the endpoint under test.
+- **Authorization Header Rule**: Always request and use `<AUTHORIZATION_HEADER>` as the literal `Authorization` header value for the endpoint under test.
+- **Response Attribute Verification Rule**: Always ask for `<RESPONSE_ATTRIBUTE_VERIFICATION>` and use it to define the response field assertions that the generated test cases must validate.
+- **Request Body Rule**: If `<HTTPS_REQUEST_TYPE>` is `POST`, `PUT`, or `DELETE`, require `<REQUEST_BODY>` before scenario design or execution. If `<HTTPS_REQUEST_TYPE>` is `GET`, do not request a body unless the user explicitly states the endpoint requires one.
 - **Webservice URL Rule**: The URL must be complete and literal. If it contains template variables such as `{{url}}` or `${url}`, stop and request the real URL.
-- **Secrets Rule**: Never include real tokens, PAT values, or secrets.
+- **Secrets Rule**: Never include real tokens, PAT values, or secrets. If the user shares a real authorization token, ask for a masked placeholder instead before storing it in output. It is acceptable to remind the user to retrieve the original header from the browser network trace and then provide only a masked or descriptive representation.
 - **Operational Safety Rule**: Follow the validated Azure DevOps CLI patterns documented in `docs/ai-known-failures.md`. If a command path is known to be fragile in this environment, use the documented workaround instead of retrying the same invalid pattern.
 
 ## Execution Safety Profile
@@ -66,14 +78,22 @@ Input safety note:
 
 ## Task
 
+### Input Collection Mode
+Before pre-flight validation, collect missing required inputs sequentially (one question at a time) and do not infer missing values.
+
 ### Pre-Flight Input Validation
 Before starting any API calls:
-1. Confirm `<USER_STORY_ID>` and `<WEBSERVICE_URL>` were explicitly provided for this run.
-2. If `<REQUIREMENT_BASED_SUITE_ID>` is provided, validate it is numeric.
-3. If `<REQUIREMENT_BASED_SUITE_ID>` is not provided, require `<TEST_PLAN_ID>` and validate it is numeric.
-4. Validate `<WEBSERVICE_URL>` is literal and does not contain template variables.
-5. If `<COMMENTS_SCOPE>` is missing or empty, set it to `20`.
-6. If `<WEBSERVICE_URL>` contains `&`, store it in a PowerShell variable before passing it to commands.
+1. Confirm `<USER_STORY_ID>`, `<WEBSERVICE_URL>`, `<HTTPS_REQUEST_TYPE>`, `<ACCEPT_HEADER>`, `<AUTHORIZATION_HEADER>`, and `<RESPONSE_ATTRIBUTE_VERIFICATION>` were explicitly provided for this run.
+2. Validate `<HTTPS_REQUEST_TYPE>` is exactly one of `GET`, `POST`, `PUT`, or `DELETE`.
+3. Validate `<ACCEPT_HEADER>` is a non-empty literal media type value, for example `application/iecontentattribute-v4+json`.
+4. Validate `<AUTHORIZATION_HEADER>` is a non-empty literal authorization value, for example `Bearer Token Dealer`, and does not contain a real secret.
+5. Validate `<RESPONSE_ATTRIBUTE_VERIFICATION>` is explicit and lists the response objects and fields that must be checked.
+6. If `<HTTPS_REQUEST_TYPE>` is `POST`, `PUT`, or `DELETE`, require `<REQUEST_BODY>` before continuing.
+7. If `<REQUIREMENT_BASED_SUITE_ID>` is provided, validate it is numeric.
+8. If `<REQUIREMENT_BASED_SUITE_ID>` is not provided, require `<TEST_PLAN_ID>` and validate it is numeric.
+9. Validate `<WEBSERVICE_URL>` is literal and does not contain template variables.
+10. If `<COMMENTS_SCOPE>` is missing or empty, set it to `20`.
+11. If `<WEBSERVICE_URL>` contains `&`, store it in a PowerShell variable before passing it to commands.
 
 ### Step 1: Retrieve User Story Details
 ```bash
@@ -146,13 +166,16 @@ Coverage rules:
 - Ratios such as 4:1, 5:1, or 6:1 are acceptable only when the story has more distinct high-priority behaviors than edge/error behaviors and those additional cases add real value.
 - Do not add negative or edge/error scenarios only to force a numeric ratio. Add them only when they validate a distinct rule, branch, risk, or observable outcome.
 - Add more Test Cases only when they remain priority-driven, non-redundant, and auditable.
+- Use `<RESPONSE_ATTRIBUTE_VERIFICATION>` as the source of truth for response field assertions.
 - Set `<EXPECTED_TC_COUNT>` to the designed number of test cases.
 
 For each test case:
-- Use Gherkin thinking to define Given, When, Then.
+- Use Gherkin thinking to define Given, When, Then. This is a behavior structure, not a limit of 3 total steps.
 - The first action/expected result pair must be:
-  - **Action**: Open BRUNO or Swagger and set the request URL to `<WEBSERVICE_URL>`.
-  - **Expected Result**: BRUNO or Swagger is open, the endpoint URL is loaded correctly, and the request is ready to execute.
+  - **Action**: Open BRUNO or Swagger, set the request URL to `<WEBSERVICE_URL>`, select `<HTTPS_REQUEST_TYPE>` as the request method, and set headers `Accept: <ACCEPT_HEADER>` and `Authorization: <AUTHORIZATION_HEADER>`.
+  - **Expected Result**: BRUNO or Swagger is open, the endpoint URL is loaded correctly, the request method is set to `<HTTPS_REQUEST_TYPE>`, the `Accept` header is set to `<ACCEPT_HEADER>`, the `Authorization` header is set to `<AUTHORIZATION_HEADER>`, and the request is ready to execute.
+- If `<HTTPS_REQUEST_TYPE>` is `POST`, `PUT`, or `DELETE`, add a step to paste `<REQUEST_BODY>` into the request body editor before execution.
+- Add validation steps and expected results that explicitly check the response attributes defined in `<RESPONSE_ATTRIBUTE_VERIFICATION>`.
 - Keep a traceability mapping to its source: `Acceptance Criteria`, `Description`, or `Discussion`.
 
 ### Step 4: Create Test Case Work Items
@@ -231,7 +254,7 @@ az devops invoke \
   --resource suitetestcase \
   --route-parameters project='Cat Digital' planId=<PLAN_ID> suiteId=<TARGET_SUITE_ID> testCaseId=<TC_ID> \
   --http-method POST \
-  --api-version 7.1-preview \
+  --api-version 7.1-preview.4 \
   --only-show-errors \
   --output json
 ```
@@ -245,7 +268,7 @@ az devops invoke \
   --area testplan \
   --resource suitetestcase \
   --route-parameters project='Cat Digital' planId=<PLAN_ID> suiteId=<TARGET_SUITE_ID> \
-  --api-version 7.1-preview \
+  --api-version 7.1-preview.4 \
   --only-show-errors \
   --output json
 ```
@@ -316,6 +339,9 @@ PLAN: <PLAN_ID>
 SUITE: <TARGET_SUITE_ID> - <SUITE_NAME>
 ITERATION: <USER_STORY_ITERATION_PATH>
 SPRINT LABEL: <SPRINT_NAME>
+ACCEPT HEADER: <ACCEPT_HEADER>
+AUTHORIZATION HEADER: <AUTHORIZATION_HEADER>
+RESPONSE ATTRIBUTE VERIFICATION: <RESPONSE_ATTRIBUTE_VERIFICATION>
 EXPECTED TC COUNT: <EXPECTED_TC_COUNT>
 TEST CASES:
 - TC001 ...
@@ -335,12 +361,18 @@ PRIORITY FOLLOW-UP: <NONE or concise statement of additional high-priority Test 
 - [ ] No iteration or sprint name was requested from the user.
 - [ ] `Test Plan ID` was requested only when `Requirement Based Suite ID` was missing.
 - [ ] The Webservice URL is literal and valid for execution.
+- [ ] `<HTTPS_REQUEST_TYPE>` was explicitly requested and validated as `GET`, `POST`, `PUT`, or `DELETE`.
+- [ ] `<ACCEPT_HEADER>` was explicitly requested and validated as a literal `Accept` header value.
+- [ ] `<AUTHORIZATION_HEADER>` was explicitly requested and validated as a literal `Authorization` header value without exposing a real secret.
+- [ ] `<RESPONSE_ATTRIBUTE_VERIFICATION>` was explicitly requested and validated before test design.
+- [ ] `<REQUEST_BODY>` was explicitly requested when `<HTTPS_REQUEST_TYPE>` was `POST`, `PUT`, or `DELETE`.
 - [ ] If comments retrieval failed, `COMMENTS_STATUS=UNAVAILABLE` was recorded and execution continued with Acceptance Criteria and Description.
 - [ ] Test design priority was Acceptance Criteria > Description > Discussion.
 - [ ] Every Test Case title starts with `TC###` and includes `US<USER_STORY_ID>`.
 - [ ] Every Test Case uses the User Story iteration.
 - [ ] Every Test Case uses the User Story area.
 - [ ] Every Test Case contains only the minimum necessary steps.
+- [ ] Test steps explicitly validate the response attributes requested in `<RESPONSE_ATTRIBUTE_VERIFICATION>`.
 - [ ] Step XML was stored with quoted attributes and renders in Azure Test Plans.
 - [ ] All created Test Cases are present in the target suite membership query.
 - [ ] The User Story has `Tested By` links to all generated Test Case IDs.

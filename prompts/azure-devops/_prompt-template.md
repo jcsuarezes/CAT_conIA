@@ -7,6 +7,11 @@ Fixed configuration:
 - Organization URL: https://dev.azure.com/cat-digital
 - Default project: Cat Digital
 
+## Execution Mode
+- When the user asks to execute or run the prompt, ask required inputs one at a time.
+- Do not batch multiple input questions in a single message.
+- Do not infer missing required inputs; collect each value explicitly before execution.
+
 ## Inputs
 - Project:
 - Authentication mode:
@@ -55,19 +60,21 @@ Fixed configuration:
 	- Use the minimum viable number of test cases, but allow ratios such as 4:1, 5:1, or 6:1 only when additional cases cover distinct high-priority behaviors and add real value.
 	- Do not create filler test cases to satisfy a numeric target.
 	- If more priority test cases remain out of scope, state that explicitly in the final output.
+	- Do not impose a fixed three-step cap in test cases. Given/When/Then is a behavior structure, and actions/expected results can include as many steps as needed for complete coverage.
 - Test Steps reliability rule:
 	- For Azure DevOps Test Case step population, use render-compatible `Microsoft.VSTS.TCM.Steps` XML with `ActionStep`, quoted attributes, and `<description/>`.
 	- Materialize step collections in an explicit array variable before building XML in PowerShell.
 	- After updating steps, read the field back and reject empty XML such as `<steps id='0' last='0'></steps>`.
 
 ## Task
-1. Validate inputs.
-2. If creating test cases, confirm User Story type is provided (Webservices/UI/Data).
-3. If type is Webservices, validate Webservice URL is present before execution.
-4. If type is Webservices, enforce Step 1 in all test cases: open BRUNO and load Webservice URL.
-5. Execute requested operation.
-6. Return structured output.
-7. End with a final status message that clearly states completion state, blockers if any, and whether more priority test cases exist without adding filler.
+1. Collect required inputs sequentially, one question at a time.
+2. Validate inputs.
+3. If creating test cases, confirm User Story type is provided (Webservices/UI/Data).
+4. If type is Webservices, validate Webservice URL is present before execution.
+5. If type is Webservices, enforce Step 1 in all test cases: open BRUNO and load Webservice URL.
+6. Execute requested operation.
+7. Return structured output.
+8. End with a final status message that clearly states completion state, blockers if any, and whether more priority test cases exist without adding filler.
 
 ## Output Format
 ### Summary
