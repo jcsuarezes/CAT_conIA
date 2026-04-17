@@ -238,6 +238,9 @@ Rules for reliable rendering in Azure Test Plans:
 - Materialize `$stepList` as an explicit array variable before calling `BuildStepsXml`; do not pass an indexed or lazily evaluated collection directly into the helper.
 - Do not rely on `az devops invoke --http-method PATCH` for `Microsoft.VSTS.TCM.Steps` in this environment.
 - After updating the field, read it back and reject values such as `<steps id='0' last='0'></steps>` even if the command exit code is `0`.
+- Hard validation gate: parse the persisted XML and verify every `<step ...>` contains exactly two `<parameterizedString ...>` nodes (Action + Expected Result) and one `<description/>`. If any step fails, treat execution as failed.
+- Minimum step gate: each created Test Case must have at least 4 steps. When `<HTTPS_REQUEST_TYPE>` is `POST`, `PUT`, or `DELETE`, each Test Case must have at least 5 steps including request body setup.
+- False-positive prevention: do not report `COMPLETED` if validation only checks text markers. Structural per-step validation is mandatory.
 
 Manual option (only if update fails):
 1. Open the Test Case work item in Azure DevOps.
@@ -297,6 +300,8 @@ Expected validation:
 - State is valid for the chosen creation path.
 - Steps are present only if a verified step population method was used.
 - Stored steps XML uses quoted attributes and includes at least one `<step ...>` element.
+- Stored steps XML has one Action and one Expected Result per step (exactly 2 `parameterizedString` nodes in each step) and includes `<description/>` in each step.
+- Stored steps XML has at least 4 steps, or at least 5 for `POST`/`PUT`/`DELETE`.
 
 ### Step 9: Link the User Story to the Test Cases
 For each Test Case ID:
@@ -346,6 +351,9 @@ EXPECTED TC COUNT: <EXPECTED_TC_COUNT>
 TEST CASES:
 - TC001 ...
 - TC002 ...
+STEP VALIDATION EVIDENCE:
+- <TC_ID> stepCount=<N> actionExpectedPairs=PASS|FAIL descriptionNodes=PASS|FAIL
+- <TC_ID> stepCount=<N> actionExpectedPairs=PASS|FAIL descriptionNodes=PASS|FAIL
 FINAL STATUS: COMPLETED | COMPLETED WITH ASSUMPTIONS | BLOCKED
 PRIORITY FOLLOW-UP: <NONE or concise statement of additional high-priority Test Cases that would add value without filler>
 ```
@@ -374,6 +382,9 @@ PRIORITY FOLLOW-UP: <NONE or concise statement of additional high-priority Test 
 - [ ] Every Test Case contains only the minimum necessary steps.
 - [ ] Test steps explicitly validate the response attributes requested in `<RESPONSE_ATTRIBUTE_VERIFICATION>`.
 - [ ] Step XML was stored with quoted attributes and renders in Azure Test Plans.
+- [ ] Every persisted `<step ...>` has exactly 2 `parameterizedString` nodes (Action + Expected Result) and `<description/>`.
+- [ ] Step count validation passed for each Test Case (>=4 or >=5 for `POST`/`PUT`/`DELETE`).
+- [ ] Final status was not marked `COMPLETED` when structural step validation failed.
 - [ ] All created Test Cases are present in the target suite membership query.
 - [ ] The User Story has `Tested By` links to all generated Test Case IDs.
 

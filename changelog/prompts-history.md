@@ -1,5 +1,16 @@
 # Prompt History
 
+## 2026-04-17 (v1.32) - STEPS FALSE-PASS PREVENTION HARDENING
+- **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
+- **Knowledge base updated**: `docs/ai-known-failures.md`
+- **Root cause addressed**:
+  - Execution reported success based on marker-only checks even when Steps were not reliably renderable in Azure Test Plans.
+- **Corrections applied**:
+  - Added a hard structural validation gate requiring each `<step ...>` to contain exactly two `parameterizedString` nodes (Action + Expected Result) and one `<description/>`.
+  - Added minimum step-count gate (`>=4`, or `>=5` for `POST`/`PUT`/`DELETE`) to prevent underspecified Test Cases.
+  - Added explicit false-positive prevention rule: no `COMPLETED` status when structural step validation fails.
+  - Extended output format with per-Test-Case step validation evidence for auditable execution.
+
 ## 2026-04-16 (v1.31) — PRIORITY COVERAGE + FINALIZATION HARDENING
 - **Shared instructions updated**: `.github/copilot-instructions.md`, `prompts/azure-devops/_prompt-template.md`
 - **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
