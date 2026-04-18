@@ -1,5 +1,17 @@
 # Prompt History
 
+## 2026-04-17 (v1.40) - PARENT NODE SELECTION UI FOR DUPLICATE HANDLING
+- **Files updated**: `prompts/azure-devops/populate-test-steps.md`
+- **Enhancement**:
+  - When a duplicate is detected, the system now extracts all existing parent node contexts from the breadcrumbs file and presents them as numbered options.
+  - User can select an existing parent node by number OR type a new one if needed.
+  - If no parent nodes exist, user is prompted to provide a context description.
+  - Clearer UI feedback in Duplicate Detection Report showing available options.
+- **Why**:
+  - Removes ambiguity when parent node context is not clear.
+  - Streamlines user decision-making by presenting options instead of asking for free-text input.
+  - Encourages consistency by reusing existing parent nodes across test scenarios.
+
 ## 2026-04-17 (v1.39) - SUPPORTING TOOL: POPULATE TEST STEPS
 - **Files created**: `prompts/azure-devops/populate-test-steps.md`
 - **Catalog updated**: `catalog/index.md` (added Supporting Tools section)
