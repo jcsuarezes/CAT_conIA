@@ -3,7 +3,7 @@
     "purpose": "Reusable repository that stores only test steps and expected results.",
     "rules": {
         "language": "English",
-        "record_format": "Each record must contain only step and expected_result.",
+        "record_format": "Each record must contain crumstep, step, and expected_result.",
         "output_required": [
             "step_result_pairs"
         ],
@@ -32,6 +32,7 @@
         {
             "step_result_pairs": [
                 {
+                    "crumstep": "",
                     "step": "",
                     "expected_result": ""
                 }
@@ -39,37 +40,21 @@
         },
         {
             "step_result_pairs": [
+              
                 {
+                    "crumstep": "",
                     "step": "",
                     "expected_result": ""
                 },
                 {
+                    "crumstep": "",
                     "step": "",
                     "expected_result": ""
                 },
                 {
-                    "step": "",
-                    "expected_result": ""
-                },
-                {
-                    "step": "",
-                    "expected_result": ""
-                },
-                {
-                    "step": "",
-                    "expected_result": ""
-                },
-                {
-                    "step": "",
-                    "expected_result": ""
-                },
-                {
-                    "step": "",
-                    "expected_result": ""
-                },
-                {
-                    "step": "",
-                    "expected_result": ""
+                    "crumstep": "HOME",
+                    "step": "Navigate to https://sis2-dev.cat.com/.",
+                    "expected_result": "The user can see the SIS2 application running correctly in the development environment."
                 }
             ]
         }
