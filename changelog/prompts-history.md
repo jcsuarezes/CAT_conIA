@@ -1,5 +1,15 @@
 # Prompt History
 
+## 2026-04-17 (v1.39) - SUPPORTING TOOL: POPULATE TEST STEPS
+- **Files created**: `prompts/azure-devops/populate-test-steps.md`
+- **Catalog updated**: `catalog/index.md` (added Supporting Tools section)
+- **Purpose**:
+  - Reusable prompt to collect, validate, and store test step-result pairs in `docs/testcase-breadcrumbs.json`.
+  - Enforces Azure DevOps text limits (180 chars action, 220 chars expected result).
+  - Supports three modes: `append` (save to breadcrumbs), `preview` (show JSON without saving), `export` (generate markdown/PowerShell).
+  - Designed for iterative test step design and team collaboration.
+- **Not part of primary execution scope**: This is a supporting tool for preparing test steps before calling `create-webservices-test-cases-from-user-story.md`.
+
 ## 2026-04-17 (v1.38) - CATALOG SCOPED TO WEBSERVICES EXECUTION
 - **Files updated**: `catalog/index.md`
 - **Scope decision recorded**:

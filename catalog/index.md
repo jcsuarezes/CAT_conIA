@@ -17,6 +17,12 @@ This repository contains a **WebServices-focused test case generation workflow**
 - Default project: `Cat Digital`
 - Execution scope: WebServices test case generation only
 
+## Supporting Tools
+
+| Name | Purpose | Version |
+|---|---|---|
+| [Populate Test Steps](../prompts/azure-devops/populate-test-steps.md) | Collect and validate test step-result pairs for storage in breadcrumbs repository | v1.0 |
+
 ## Historical Reference
 
 Other prompts exist in the `prompts/azure-devops/` folder but are not active in the current execution scope. See [changelog/prompts-history.md](../changelog/prompts-history.md) for historical records and removal dates.
