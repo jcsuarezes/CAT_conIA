@@ -16,7 +16,7 @@ When the user explicitly requests to **execute a prompt** (e.g., "execute the pr
    - Organization URL: `https://dev.azure.com/cat-digital`
    - Default project: `Cat Digital` 
 
-2. For get-work-item retrieval prompts, use IDs-only mode unless explicitly requested otherwise.
+2. For Work Item retrieval prompts, request the Work Item URL first and extract the numeric ID internally. Accept numeric ID input only as a fallback when URL is not available.
 3. Never include real secrets (PAT/token values) in any markdown file.
 4. Every time a new prompt file is created:
    - Add an entry to `catalog/index.md`.
@@ -41,6 +41,8 @@ When the user explicitly requests to **execute a prompt** (e.g., "execute the pr
 - For Test Plans execution inputs, request IDs as a URL fragment first (not as isolated IDs and not the full URL).
 - Required fragment format example: `planId=2654621&suiteId=2673065`.
 - If the fragment is missing one value, ask only for the missing key in the same fragment style.
+- For Work Item inputs, request the full Azure DevOps Work Item URL first (example: `https://dev.azure.com/cat-digital/Cat%20Digital/_workitems/edit/2587561`) and extract the numeric ID internally.
+- If the user does not have the URL, accept a numeric Work Item ID.
 
 ## Prompt quality standard
 - Keep prompts in English.
@@ -76,11 +78,10 @@ There are three supported User Story types for test design: Webservices, UI, and
 If the User Story type is not explicitly provided, ask the user to confirm whether it is Webservices, UI, or Data before generating or saving test cases.
 Generate only the minimum number of test cases necessary to cover the acceptance criteria, core behavior, and distinct risks.
 Do not create extra scenarios when they do not validate a new rule, branch, or observable outcome.
-As a general rule, target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set.
-Treat this as a coverage-balancing guideline, not as a rigid per-scenario quota. Do not add negative or edge/error cases only to force the count.
-Adjust the ratio when the minimum viable coverage is achieved with fewer edge/error scenarios, or when a specific risk, complexity, or criticality clearly requires additional coverage.
-Ratios such as 4:1, 5:1, or 6:1 are valid only when the additional cases are high-priority, non-duplicative, and driven by distinct business risk or acceptance-criteria coverage that adds real value.
-Prefer additional priority test cases over filler when the story exposes more than three meaningful happy-path or business-critical behaviors.
+As a general rule, use a baseline of 1 happy path plus up to 3 negative/edge/boundary scenarios per core behavior when those scenarios validate distinct risks or observable outcomes.
+Treat this as the default framework pattern, not as a strict quota. If no meaningful negative, edge, or boundary coverage exists, do not invent those scenarios just to reach four test cases.
+If analysis identifies more than 3 distinct negative/edge/boundary scenarios that add real coverage value, include them, with a maximum of 5 negative/edge/boundary scenarios per happy path.
+Prefer the minimum non-duplicative set that covers acceptance criteria, business risk, and observable behavior.
 Generated test cases must be stored in their corresponding folders based on User Story type:
 - `outputs/test-cases/webservices/` for Webservices stories
 - `outputs/test-cases/ui/` for UI stories
@@ -112,5 +113,14 @@ Each Gherkin scenario must include:
 - And: any additional steps or conditions
 - Then: expected outcome
 - And: additional assertions or outcomes if needed
+
+### Gherkin Steps Naming Convention
+When writing Gherkin steps (When, Then, And clauses), structure steps to begin with an infinitive verb whenever possible:
+- **When steps**: Use infinitive form (e.g., "When navigate to the login page", "When submit the form", "When enter the user credentials")
+- **Then steps**: Use infinitive form (e.g., "Then verify the error message displays", "Then confirm the work item is created", "Then validate the API response contains the expected fields")
+- **Given steps**: Use infinitive form where applicable (e.g., "Given create a test work item", "Given configure the organization context")
+- This pattern applies across all test cases, test steps, and expected results generated from Gherkin scenarios
+- Purpose: Ensure consistency, clarity, and alignment with BDD standards; infinitive verbs improve readability and reduce ambiguity in test execution contexts
+- **Exception for Webservices**: When the User Story type is **Webservices**, respect the naming and step conventions as defined in `prompts/azure-devops/create-webservices-test-cases-from-user-story.md`. Do not override Webservices-specific conventions with this general naming rule.
 
 

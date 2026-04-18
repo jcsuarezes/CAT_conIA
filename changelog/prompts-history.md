@@ -1,5 +1,36 @@
 # Prompt History
 
+## 2026-04-17 (v2.0) - URL-FIRST WORK ITEM FLOW + MULTI-BREADCRUMB UI GENERATION
+- **Milestone**: PromptOps framework evolution to `v2.0` for UI breadcrumb-driven test case generation.
+- **Scope consolidated**:
+  - URL-first Work Item collection (extract numeric ID internally, fallback to numeric ID only when URL is unavailable).
+  - Multi-breadcrumb input collection with explicit breadcrumb count before generation.
+  - Reuse of breadcrumb repository (`docs/testcase-breadcrumbs.json`) as navigation source.
+  - Reuse of validated Test Case injection lifecycle and suite-resolution dependency.
+- **Why**:
+  - Faster and safer execution input model.
+  - Better coverage control for bugs and stories that require more than one breadcrumb path.
+  - Stronger consistency between prompt design and Azure DevOps execution behavior.
+
+## 2026-04-17 (v1.42) - WORK ITEM URL-FIRST INPUT STANDARD
+- **Files updated**: `.github/copilot-instructions.md`, `prompts/azure-devops/_prompt-template.md`, `prompts/azure-devops/create-webservices-test-cases-from-user-story.md`, `prompts/azure-devops/create-ui-test-cases-from-work-item-and-breadcrumbs.md`
+- **Standardized behavior**:
+  - Work Item collection now requests full Azure DevOps Work Item URL first and extracts numeric ID internally.
+  - Numeric Work Item ID is accepted only as fallback when URL is unavailable.
+- **Why**:
+  - Faster user input and lower risk of wrong ID entry by copying the canonical Work Item URL directly from Azure DevOps.
+
+## 2026-04-17 (v1.41) - UI WORK ITEM + MULTI-BREADCRUMB TEST CASE GENERATION
+- **Files created**: `prompts/azure-devops/create-ui-test-cases-from-work-item-and-breadcrumbs.md`
+- **Catalog updated**: `catalog/index.md`
+- **Capability added**:
+  - Added a reusable UI prompt that retrieves a Work Item, asks how many breadcrumbs will be used, collects each breadcrumb one by one, resolves them against `docs/testcase-breadcrumbs.json`, and generates the minimum Gherkin test set.
+  - Reuses the suite-resolution prompt and the Azure DevOps Test Case injection model validated by `create-webservices-test-cases-from-user-story.md`.
+  - Supports Bugs and User Stories as source Work Items while enforcing `UI` as the test design type.
+- **Why**:
+  - Avoid under-coverage when a single Work Item requires multiple breadcrumbs such as `Parts` and `Repair`.
+  - Keep reusable navigation knowledge in the breadcrumbs repository while deriving the final validation from acceptance criteria and bug behavior.
+
 ## 2026-04-17 (v1.40) - PARENT NODE SELECTION UI FOR DUPLICATE HANDLING
 - **Files updated**: `prompts/azure-devops/populate-test-steps.md`
 - **Enhancement**:

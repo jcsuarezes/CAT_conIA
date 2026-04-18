@@ -16,24 +16,25 @@ Fixed configuration:
 - Project:
 - Authentication mode:
 - Operation-specific inputs:
+- Work Item input format (default): full Azure DevOps Work Item URL first; numeric ID accepted as fallback.
 - User Story type (required for test case generation): Webservices | UI | Data
 - Test Plans ID fragment input (when suites are involved): `planId=<PLAN_ID>&suiteId=<SUITE_ID>` (fragment only, never full URL)
 
 ### Inputs by User Story Type
 - Webservices:
-	- User Story Work Item ID
+	- User Story Work Item URL (preferred) or numeric ID (fallback)
 	- Requirement Based Suite ID *(child)* (optional when already known)
 	- Test Plan ID *(parent container)* (required in ALL cases — both when reusing a suite and when creating one; the API needs planId for every suite operation)
 	- Webservice URL (mandatory)
 	- API method and headers (if applicable)
 - UI:
-	- User Story Work Item ID
+	- User Story/Bug Work Item URL (preferred) or numeric ID (fallback)
 	- Requirement Based Suite ID *(child)* (optional when already known)
 	- Test Plan ID *(parent container)* (required in ALL cases)
 	- Application URL
 	- Browser/Device matrix (if applicable)
 - Data:
-	- User Story Work Item ID
+	- User Story Work Item URL (preferred) or numeric ID (fallback)
 	- Requirement Based Suite ID *(child)* (optional when already known)
 	- Test Plan ID *(parent container)* (required in ALL cases)
 	- Source dataset/table
@@ -43,6 +44,7 @@ Fixed configuration:
 - Do not expose secrets or tokens.
 - Validate missing inputs before executing.
 - Keep output concise and auditable.
+- Request Work Item URL first and extract numeric ID internally; accept raw numeric ID only when URL is unavailable.
 - Follow shared command guidance in `docs/validated-command-patterns.md` before using Azure DevOps CLI shortcuts.
 - When using Azure DevOps CLI retrieval commands, prefer validated command patterns over minimal-output shortcuts.
 - For `az boards work-item show`, do not combine `--fields` with `--expand`; retrieve with `--expand fields -o json` and extract required values from the `fields` object.
@@ -60,7 +62,9 @@ Fixed configuration:
 	- Do not request or store the full URL when fragment values are sufficient.
 	- Do not ask for sprint or iteration as direct input when a User Story is available; derive them from `System.IterationPath`.
 - Test design prioritization rule:
-	- Use the minimum viable number of test cases, but allow ratios such as 4:1, 5:1, or 6:1 only when additional cases cover distinct high-priority behaviors and add real value.
+	- Use the minimum viable number of test cases, with a default pattern of 1 happy path plus up to 3 negative/edge/boundary scenarios per core behavior when those scenarios add distinct coverage value.
+	- If no meaningful negative, edge, or boundary coverage exists, do not invent scenarios just to reach four test cases.
+	- If more than 3 distinct negative/edge/boundary scenarios add real coverage value, allow up to 5 per happy path.
 	- Do not create filler test cases to satisfy a numeric target.
 	- If more priority test cases remain out of scope, state that explicitly in the final output.
 	- Do not impose a fixed three-step cap in test cases. Given/When/Then is a behavior structure, and actions/expected results can include as many steps as needed for complete coverage.

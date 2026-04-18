@@ -2,7 +2,7 @@
 
 ## Active Execution Scope
 
-This repository contains a **WebServices-focused test case generation workflow** with two active prompts:
+This repository contains a **primary WebServices-focused workflow** plus additional reusable Azure DevOps prompts for UI breadcrumb-driven test design.
 
 | Name | Purpose | Version |
 |---|---|---|
@@ -22,6 +22,7 @@ This repository contains a **WebServices-focused test case generation workflow**
 | Name | Purpose | Version |
 |---|---|---|
 | [Populate Test Steps](../prompts/azure-devops/populate-test-steps.md) | Collect and validate test step-result pairs for storage in breadcrumbs repository | v1.0 |
+| [Create UI Test Cases From Work Item And Breadcrumbs](../prompts/azure-devops/create-ui-test-cases-from-work-item-and-breadcrumbs.md) | Generate UI test cases from a Work Item plus one or more reusable breadcrumbs and inject them into Azure DevOps | v2.0 |
 
 ## Historical Reference
 

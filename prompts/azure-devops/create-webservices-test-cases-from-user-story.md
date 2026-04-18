@@ -5,7 +5,7 @@ Generate Azure DevOps Test Cases from a webservices User Story.
 Use the User Story as the source of truth for title, area, and iteration. Use an existing Requirement Based Suite as the target suite when the user provides its ID. If the user does not provide that suite ID, ask for the Test Plan ID and create a Requirement Based Suite for the User Story under that plan. The prompt must design the minimum viable set of Gherkin-style scenarios, create the Test Case work items, link them to the resolved or newly created suite, and link them back to the User Story.
 
 ## Inputs
-- **User Story Work Item ID**: Numeric ID of the User Story for the current execution.
+- **User Story Work Item URL or Numeric ID**: Required. Request full Work Item URL first and extract numeric ID internally. Accept numeric ID only when URL is not available.
 - **Requirement Based Suite ID** *(child)*: Optional numeric ID of an existing Requirement Based Suite (child suite) that will receive the generated test cases. This suite must live directly inside the Test Plan specified below.
 - **Test Plan ID** *(parent)*: Required in ALL cases — the Test Plan is the parent container that owns the Requirement Based Suite. Needed both when reusing an existing suite (to validate the suite belongs to this plan) and when creating a new one. The API requires `planId` for every suite operation; there is no reliable way to auto-discover the plan from just the suite ID across large organizations.
 - **Preferred ID input format for plan/suite reuse**: Ask the user for fragment-only input from Test Plans URL: `planId=<PLAN_ID>&suiteId=<SUITE_ID>` (example: `planId=2654621&suiteId=2673065`). Do not ask for the full URL.
@@ -31,6 +31,7 @@ Input safety note:
 - **Execution Input Mode Rule**: During execution, ask required inputs one at a time and do not batch multiple questions in one message.
 - **Terminology**: Use official Azure DevOps terms only: Work Item, ID, Requirement Based Suite, Test Case, Test Plan, WIQL.
 - **ID Validation**: Validate every provided ID is numeric before any API call.
+- **Work Item URL Rule**: Request Work Item URL first and extract `<USER_STORY_ID>` internally. If URL is unavailable, accept numeric `<USER_STORY_ID>`.
 - **Source of Truth**:
   - Title comes from `System.Title` on the User Story.
   - Area comes from `System.AreaPath` on the User Story.
@@ -43,9 +44,9 @@ Input safety note:
 - **Suite Hierarchy Rule**: Never treat a container or parent suite as the execution target for this prompt. The resolved suite must be the direct Requirement Based Suite that will receive the created Test Cases.
 - **Suite Resolution Reuse Rule**: Step 2 must use `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` as the single source for suite resolution/creation behavior. Do not duplicate or override that logic in this prompt.
 - **Requirement Mapping Rule**: If a provided suite is associated with a requirement/work item and that requirement ID is different from `<USER_STORY_ID>`, stop and request confirmation before continuing.
-- **Case Ratio**: Target an overall 3:1 ratio of happy path scenarios to edge/error scenarios across the full test set when the story supports that balance.
-- **Case Ratio Clarification**: This ratio is a suite-level guideline, not a rigid quota. Do not create extra negative or edge/error scenarios just to force the count, and never interpret the rule as 3 negative cases per happy path.
-- **Priority Coverage Rule**: Ratios such as `4:1`, `5:1`, or `6:1` are valid only when the additional cases cover distinct high-priority behaviors, acceptance criteria, or business risks that add real value.
+- **Case Ratio Baseline**: Use a default pattern of 1 happy path plus up to 3 negative/edge/boundary scenarios per core behavior when those scenarios cover distinct risks or observable outcomes.
+- **Case Ratio Clarification**: This is the default framework pattern, not a rigid quota. If no meaningful negative, edge, or boundary coverage exists, do not invent scenarios just to reach four cases.
+- **Case Ratio Expansion Rule**: If more than 3 distinct negative/edge/boundary scenarios add real coverage value, include them, with a maximum of 5 negative/edge/boundary scenarios per happy path.
 - **Minimum Coverage**: Generate only the minimum number of test cases needed to cover the acceptance criteria, core behavior, and distinct risks.
 - **No Filler Rule**: Additional Test Cases are allowed only when they are priority-driven and non-duplicative. Do not add filler scenarios to satisfy a ratio, round number, or naming sequence.
 - **Title Format**: `TC### - US<USER_STORY_ID> - <Abbreviated User Story Title> - <Short Significant Scenario>`.
@@ -88,10 +89,12 @@ Input safety note:
 Before pre-flight validation, collect missing required inputs sequentially (one question at a time) and do not infer missing values.
 Optional input `<ADDITIONAL_INSTRUCTIONS>` may be collected if the user volunteers it; otherwise, ask after all required inputs are confirmed and execution is about to begin.
 When collecting existing plan/suite values for reuse, request the fragment format first: `planId=<PLAN_ID>&suiteId=<SUITE_ID>`.
+Ask for the User Story Work Item URL first; if the user does not have it, request the numeric ID.
 
 ### Pre-Flight Input Validation
 Before starting any API calls:
-1. Confirm `<USER_STORY_ID>`, `<WEBSERVICE_URL>`, `<HTTPS_REQUEST_TYPE>`, `<ACCEPT_HEADER>`, `<AUTHORIZATION_HEADER>`, and `<RESPONSE_ATTRIBUTE_VERIFICATION>` were explicitly provided for this run.
+1. Confirm Work Item input was provided as URL or numeric ID, extract/resolve `<USER_STORY_ID>`, and confirm `<WEBSERVICE_URL>`, `<HTTPS_REQUEST_TYPE>`, `<ACCEPT_HEADER>`, `<AUTHORIZATION_HEADER>`, and `<RESPONSE_ATTRIBUTE_VERIFICATION>` were explicitly provided for this run.
+1b. Validate extracted or provided `<USER_STORY_ID>` is numeric.
 2. Validate `<HTTPS_REQUEST_TYPE>` is exactly one of `GET`, `POST`, `PUT`, or `DELETE`.
 3. Validate `<ACCEPT_HEADER>` is a non-empty literal media type value, for example `application/iecontentattribute-v4+json`.
 4. Validate `<AUTHORIZATION_HEADER>` is a non-empty literal authorization value, for example `Bearer Token Dealer`, and does not contain a real secret.
@@ -172,9 +175,10 @@ From Acceptance Criteria first, then Description, then Discussion, design the mi
 
 Coverage rules:
 - Start from the minimum viable set of scenarios needed for coverage.
-- Prefer a suite that remains predominantly happy-path oriented, aiming for an overall 3:1 balance of happy path to edge/error scenarios when that matches the distinct behaviors under test.
-- Ratios such as 4:1, 5:1, or 6:1 are acceptable only when the story has more distinct high-priority behaviors than edge/error behaviors and those additional cases add real value.
-- Do not add negative or edge/error scenarios only to force a numeric ratio. Add them only when they validate a distinct rule, branch, risk, or observable outcome.
+- Use the default framework pattern of 1 happy path plus up to 3 negative/edge/boundary scenarios per core behavior when those scenarios validate distinct risks or observable outcomes.
+- If no meaningful negative, edge, or boundary coverage exists, do not invent scenarios just to reach four cases.
+- If more than 3 distinct negative/edge/boundary scenarios add real coverage value, include them, with a maximum of 5 negative/edge/boundary scenarios per happy path.
+- Do not add negative or edge/boundary scenarios only to force a numeric ratio. Add them only when they validate a distinct rule, branch, risk, or observable outcome.
 - Add more Test Cases only when they remain priority-driven, non-redundant, and auditable.
 - Use `<RESPONSE_ATTRIBUTE_VERIFICATION>` as the source of truth for response field assertions.
 - Set `<EXPECTED_TC_COUNT>` to the designed number of test cases.
