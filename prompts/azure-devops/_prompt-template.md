@@ -17,24 +17,25 @@ Fixed configuration:
 - Authentication mode:
 - Operation-specific inputs:
 - User Story type (required for test case generation): Webservices | UI | Data
+- Test Plans ID fragment input (when suites are involved): `planId=<PLAN_ID>&suiteId=<SUITE_ID>` (fragment only, never full URL)
 
 ### Inputs by User Story Type
 - Webservices:
 	- User Story Work Item ID
-	- Requirement Based Suite ID (optional when already known)
-	- Test Plan ID (required only when Requirement Based Suite ID is not provided)
+	- Requirement Based Suite ID *(child)* (optional when already known)
+	- Test Plan ID *(parent container)* (required in ALL cases — both when reusing a suite and when creating one; the API needs planId for every suite operation)
 	- Webservice URL (mandatory)
 	- API method and headers (if applicable)
 - UI:
 	- User Story Work Item ID
-	- Requirement Based Suite ID (optional when already known)
-	- Test Plan ID (required only when Requirement Based Suite ID is not provided)
+	- Requirement Based Suite ID *(child)* (optional when already known)
+	- Test Plan ID *(parent container)* (required in ALL cases)
 	- Application URL
 	- Browser/Device matrix (if applicable)
 - Data:
 	- User Story Work Item ID
-	- Requirement Based Suite ID (optional when already known)
-	- Test Plan ID (required only when Requirement Based Suite ID is not provided)
+	- Requirement Based Suite ID *(child)* (optional when already known)
+	- Test Plan ID *(parent container)* (required in ALL cases)
 	- Source dataset/table
 	- Validation rules and expected output dataset/table
 
@@ -55,6 +56,8 @@ Fixed configuration:
 	- If the operation resolves, reuses, or creates Azure DevOps test suites, call `prompts/azure-devops/resolve-or-create-requirement-based-suite.md`.
 	- Do not duplicate suite-resolution logic inside each test-case prompt.
 	- Require output handoff contract: `Resolved Plan ID` and `Resolved Suite ID`.
+	- When asking users for existing plan/suite values, ask for the Test Plans URL fragment only: `planId=<PLAN_ID>&suiteId=<SUITE_ID>`.
+	- Do not request or store the full URL when fragment values are sufficient.
 	- Do not ask for sprint or iteration as direct input when a User Story is available; derive them from `System.IterationPath`.
 - Test design prioritization rule:
 	- Use the minimum viable number of test cases, but allow ratios such as 4:1, 5:1, or 6:1 only when additional cases cover distinct high-priority behaviors and add real value.

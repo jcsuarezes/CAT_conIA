@@ -6,8 +6,9 @@ Use the User Story as the source of truth for title, area, and iteration. Use an
 
 ## Inputs
 - **User Story Work Item ID**: Numeric ID of the User Story for the current execution.
-- **Requirement Based Suite ID**: Optional numeric ID of an existing Requirement Based Suite that will receive the generated test cases.
-- **Test Plan ID**: Required only when the user does not provide `Requirement Based Suite ID`. This Test Plan will be used to create a new Requirement Based Suite for the User Story.
+- **Requirement Based Suite ID** *(child)*: Optional numeric ID of an existing Requirement Based Suite (child suite) that will receive the generated test cases. This suite must live directly inside the Test Plan specified below.
+- **Test Plan ID** *(parent)*: Required in ALL cases — the Test Plan is the parent container that owns the Requirement Based Suite. Needed both when reusing an existing suite (to validate the suite belongs to this plan) and when creating a new one. The API requires `planId` for every suite operation; there is no reliable way to auto-discover the plan from just the suite ID across large organizations.
+- **Preferred ID input format for plan/suite reuse**: Ask the user for fragment-only input from Test Plans URL: `planId=<PLAN_ID>&suiteId=<SUITE_ID>` (example: `planId=2654621&suiteId=2673065`). Do not ask for the full URL.
 - **Webservice URL**: Full literal API URL under test (example: `https://host/api/resource`).
 - **HTTPS Request Type**: Required HTTP method for the endpoint under test. Allowed values: `GET`, `POST`, `PUT`, `DELETE`.
 - **Accept Header**: Required literal value for the `Accept` header sent with the request (example: `application/iecontentattribute-v4+json`).
@@ -36,8 +37,8 @@ Input safety note:
   - Iteration comes from `System.IterationPath` on the User Story.
   - Sprint label is always the last component of `System.IterationPath`.
 - **Iteration Rule**: Never ask the user for iteration or sprint name. The iteration must always be the same as the User Story iteration.
-- **Suite Resolution Rule**: If the user provides `Requirement Based Suite ID`, reuse it after validation and derive the plan from that suite.
-- **Suite Creation Rule**: If the user does not provide `Requirement Based Suite ID`, ask for `Test Plan ID` and create a Requirement Based Suite for `<USER_STORY_ID>` under that plan.
+  - **Suite Resolution Rule**: If the user provides `Requirement Based Suite ID`, require `Test Plan ID` as well and validate the suite using direct lookup `planId + suiteId`. Never attempt to auto-discover `planId` by scanning all plans.
+  - **Suite Creation Rule**: If the user does not provide `Requirement Based Suite ID`, require `Test Plan ID` and create a Requirement Based Suite for `<USER_STORY_ID>` under that plan.
 - **Requirement Based Suite Rule**: Any target suite used by this prompt must resolve to exactly one suite and must be a Requirement Based Suite.
 - **Suite Hierarchy Rule**: Never treat a container or parent suite as the execution target for this prompt. The resolved suite must be the direct Requirement Based Suite that will receive the created Test Cases.
 - **Suite Resolution Reuse Rule**: Step 2 must use `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` as the single source for suite resolution/creation behavior. Do not duplicate or override that logic in this prompt.
@@ -78,12 +79,15 @@ Input safety note:
   3. Use PowerShell variables or temp files for long URLs and XML payloads.
   4. Continue with Acceptance Criteria and Description if comments retrieval fails, and record `COMMENTS_STATUS=UNAVAILABLE`.
   5. Verify every write operation with an immediate read.
+  6. Write all multi-step PowerShell automation to a `.ps1` file under `scripts/` and execute it with `& .\scripts\name.ps1`. Do not paste long inline scripts into the terminal — they will be truncated.
+  7. Never use `$pid` or `$PID` as a variable name in PowerShell; it is a reserved process variable. Use `$planId`, `$planIdCurrent`, or similar alternatives.
 
 ## Task
 
 ### Input Collection Mode
 Before pre-flight validation, collect missing required inputs sequentially (one question at a time) and do not infer missing values.
 Optional input `<ADDITIONAL_INSTRUCTIONS>` may be collected if the user volunteers it; otherwise, ask after all required inputs are confirmed and execution is about to begin.
+When collecting existing plan/suite values for reuse, request the fragment format first: `planId=<PLAN_ID>&suiteId=<SUITE_ID>`.
 
 ### Pre-Flight Input Validation
 Before starting any API calls:
@@ -93,8 +97,9 @@ Before starting any API calls:
 4. Validate `<AUTHORIZATION_HEADER>` is a non-empty literal authorization value, for example `Bearer Token Dealer`, and does not contain a real secret.
 5. Validate `<RESPONSE_ATTRIBUTE_VERIFICATION>` is explicit and lists the response objects and fields that must be checked.
 6. If `<HTTPS_REQUEST_TYPE>` is `POST`, `PUT`, or `DELETE`, require `<REQUEST_BODY>` before continuing.
-7. If `<REQUIREMENT_BASED_SUITE_ID>` is provided, validate it is numeric.
-8. If `<REQUIREMENT_BASED_SUITE_ID>` is not provided, require `<TEST_PLAN_ID>` and validate it is numeric.
+  7. Require `<TEST_PLAN_ID>` (parent container) regardless of whether `<REQUIREMENT_BASED_SUITE_ID>` is provided. Validate it is numeric. When asking the user, label it explicitly as: *"Test Plan ID (parent container)"*.
+  8. If `<REQUIREMENT_BASED_SUITE_ID>` is provided, validate it is numeric. When asking the user, label it explicitly as: *"Requirement Based Suite ID (child suite inside the Test Plan)"*. Then perform a direct plan+suite lookup immediately in pre-flight and STOP with BLOCKED if the plan or suite is not found. Never scan all plans to discover the plan for a given suite.
+  8b. If `<REQUIREMENT_BASED_SUITE_ID>` is not provided, validate `<TEST_PLAN_ID>` exists via direct plan lookup before continuing.
 9. Validate `<WEBSERVICE_URL>` is literal and does not contain template variables.
 10. If `<COMMENTS_SCOPE>` is missing or empty, set it to `20`.
 11. If `<WEBSERVICE_URL>` contains `&`, store it in a PowerShell variable before passing it to commands.

@@ -38,6 +38,9 @@ When the user explicitly requests to **execute a prompt** (e.g., "execute the pr
 - Default assigned user for Work Item queries/updates: `suarez.juan@cat.com`
 - If `Assigned To` is missing, ask first; if the user does not provide a value, use the default assigned user from `profiles/default.md`.
 - Keep these defaults non-secret and updated when the user requests changes.
+- For Test Plans execution inputs, request IDs as a URL fragment first (not as isolated IDs and not the full URL).
+- Required fragment format example: `planId=2654621&suiteId=2673065`.
+- If the fragment is missing one value, ask only for the missing key in the same fragment style.
 
 ## Prompt quality standard
 - Keep prompts in English.
@@ -93,6 +96,7 @@ When creating or guiding the creation of Test Case work items in Azure DevOps Te
 - In instructions and outputs, explicitly state both IDs when relevant:
    - Parent/container suite ID
    - Target child suite ID (creation destination)
+- When collecting these IDs from users, ask for fragment-only input from the Test Plans URL (never request the full URL): `planId=<PLAN_ID>&suiteId=<SUITE_ID>`.
 - For suite discovery/reuse/creation logic, use `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` as the reusable source of truth. Do not duplicate suite-resolution logic across prompts.
 
 - Happy path scenarios

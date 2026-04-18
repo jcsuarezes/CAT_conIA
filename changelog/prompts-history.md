@@ -1,5 +1,67 @@
 # Prompt History
 
+## 2026-04-17 (v1.38) - CATALOG SCOPED TO WEBSERVICES EXECUTION
+- **Files updated**: `catalog/index.md`
+- **Scope decision recorded**:
+  - Only one primary execution prompt remains active: `prompts/azure-devops/create-webservices-test-cases-from-user-story.md`.
+  - Required execution dependency also remains active: `prompts/azure-devops/resolve-or-create-requirement-based-suite.md`.
+  - Other prompts are explicitly marked `Inactive (Out of execution scope)` in the catalog.
+  - Removed prompt entries are now listed under `Removed Core Prompts` to avoid broken active links.
+- **Why**:
+  - Align repository operation with current usage model and prevent accidental invocation of non-target prompts.
+
+## 2026-04-17 (v1.37) - TEST PLANS ID FRAGMENT INPUT STANDARD
+- **Files updated**: `.github/copilot-instructions.md`, `prompts/azure-devops/_prompt-template.md`, `prompts/azure-devops/create-webservices-test-cases-from-user-story.md`
+- **Standardized input collection rule**:
+  - When requesting Test Plans identifiers, ask users for fragment-only input from URL, not isolated IDs and not full URL.
+  - Required fragment format: `planId=<PLAN_ID>&suiteId=<SUITE_ID>`.
+  - If one key is missing, ask only for the missing key using the same fragment style.
+- **Why**:
+  - Reduces recurrent plan/suite ID swaps and prevents avoidable `Test plan not found` failures during execution.
+
+## 2026-04-17 (v1.36) - EXECUTION LEARNING HARDENING + VERIFICATION SAFETY
+- **Files updated**: `docs/ai-known-failures.md`, `docs/validated-command-patterns.md`
+- **What was fixed globally**:
+  - Added explicit guardrails to avoid recurring confusion between `planId` and `suiteId` when copying IDs from Test Plans UI/URL.
+  - Standardized command-validation rule to avoid relying on piped output (`Select-Object`) as proof of successful `az` execution.
+  - Added stable guidance for Steps XML structural validation to prevent false FAIL caused by ambiguous PowerShell node counting.
+  - Strengthened suite-membership verification guidance to use targeted ID paths (`testCase.id`, `workItem.id`, `testCaseId`) instead of broad text matching.
+- **Why**:
+  - Prevent repeated false blockers and false positives observed during end-to-end test-case execution runs.
+- **Expected impact**:
+  - Higher execution reliability, fewer misdiagnosed failures, and no meaningful runtime overhead (documentation/pattern hardening only).
+
+## 2026-04-17 (v1.35) — PROJECT AUDIT CORRECTIONS
+- **Files updated**: `catalog/index.md`, `prompts/azure-devops/_prompt-template.md`, `docs/ai-known-failures.md`
+- **Audit findings corrected**:
+  1. `catalog/index.md`: bumped `create-webservices` to v1.34, bumped `resolve-or-create-requirement-based-suite` to v1.1, updated input descriptions to reflect parent/child labels and always-required planId rule.
+  2. `_prompt-template.md`: corrected `Test Plan ID` rule in all three User Story type sections (Webservices, UI, Data) from "required only when suite ID is not provided" to "required in ALL cases", consistent with v1.34 prompt rule; added parent/child labels.
+  3. `docs/ai-known-failures.md`: normalized failure numbering to `#1` through `#10` for consistent cross-referencing.
+- **Remaining open items (no automation required)**:
+  - `scripts/` folder contains 9 scripts without owner/retirement documentation. Manual review recommended.
+  - `outputs/test-cases/webservices/` is empty (execution US 2527249 was blocked before TC creation). No cleanup needed.
+
+## 2026-04-17 (v1.34) — SUITE & PLAN RESOLUTION HARDENING (post-execution learning)
+- **Prompts updated**: `create-webservices-test-cases-from-user-story.md`, `resolve-or-create-requirement-based-suite.md`
+- **Knowledge base updated**: `docs/ai-known-failures.md`
+- **Root cause**: During execution of US 2527249, suite 2673065 and plan 2654622 could not be resolved automatically because:
+  1. The API `testplan/suites` requires `planId` for every lookup — there is no route to find a suite by ID alone.
+  2. Scanning 200+ plans with pagination times out (> 3 min) and is architecturally unreliable.
+  3. Plan ID provided by user (2654622) did not exist in the organization.
+  4. PowerShell reserved variable `$PID` caused `VariableNotWritable` errors in enumeration scripts.
+  5. Long one-liner scripts (>500 chars) were being truncated in the terminal, producing partial/silent failures.
+- **Corrections applied**:
+  - `Test Plan ID` is now required in ALL execution paths (both when reusing and when creating a suite). The API needs it regardless.
+  - Suite resolution now uses direct lookup `planId + suiteId` only. Scanning all plans is explicitly forbidden.
+  - Pre-flight validation must verify the plan exists via direct lookup before any suite operation, failing fast with BLOCKED if not found.
+  - Added rule: never use `$pid`/`$PID` as a PowerShell variable name.
+  - Added rule: write multi-step automation to `.ps1` files; do not paste long inline scripts into the terminal.
+- **New failure patterns documented** in `docs/ai-known-failures.md`:
+  - #7: `$PID` is a reserved PowerShell variable.
+  - #8: Long inline scripts are truncated in terminal.
+  - #9: Suite scan across 100+ plans causes timeout.
+  - #10: Plan ID must be validated via direct lookup before any suite operation.
+
 ## 2026-04-17 (v1.33) — OPTIONAL SPANISH INSTRUCTIONS INPUT
 - **Prompt updated**: `create-webservices-test-cases-from-user-story.md`
 - **Changes**:
