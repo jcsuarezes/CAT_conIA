@@ -1,4 +1,4 @@
-# Create UI Test Cases from Work Item and Breadcrumbs
+﻿# Create UI Test Cases from Work Item and Breadcrumbs
 
 ## Context
 Generate Azure DevOps Test Cases for a UI Work Item by combining:
@@ -6,7 +6,7 @@ Generate Azure DevOps Test Cases for a UI Work Item by combining:
 - one or more full breadcrumbs provided by the user
 - reusable step definitions stored in `docs/testcase-breadcrumbs.json`
 
-The prompt must ask how many breadcrumbs will be used before collecting them, resolve each breadcrumb against the breadcrumbs repository, design the minimum viable Gherkin test set, create the Test Case work items, inject the test steps, link the Test Cases to the resolved Requirement Based Suite, and link them back to the source Work Item.
+The prompt must collect one or more full breadcrumbs, resolve each against the breadcrumbs repository, design the minimum viable Gherkin test set across all provided breadcrumbs, create the Test Case work items, inject the test steps, link the Test Cases to the resolved destination suite, and link them back to the source Work Item.
 
 Injection model alignment:
 - Use the same Azure DevOps Test Case injection lifecycle validated in `prompts/azure-devops/create-webservices-test-cases-from-user-story.md`.
@@ -14,14 +14,19 @@ Injection model alignment:
 - This prompt is for UI coverage only. If the requested test design type is not `UI`, stop and redirect to the appropriate prompt.
 
 ## Inputs
-- **Work Item URL or Numeric ID**: Required. Request full Azure DevOps Work Item URL first and extract numeric ID internally. Accept numeric ID only when URL is not available.
-- **Test Design Type**: Required. Allowed value for this prompt: `UI` only.
-- **Requirement Work Item ID for Suite Association**: Conditionally required. If the source Work Item is a `Bug`, require the numeric `User Story` or requirement Work Item ID that must own the Requirement Based Suite.
-- **Requirement Based Suite ID** *(child)*: Optional numeric ID of an existing Requirement Based Suite that will receive the generated Test Cases.
+- **Source Work Item URL or Numeric ID**: Required. This is the Work Item from which the test cases will be derived (`Bug` or `User Story`). Request full Azure DevOps Work Item URL first and extract numeric ID internally. Accept numeric ID only when URL is not available.
+- **Test Design Type**: Fixed value `UI`. This prompt supports only `UI` test design. Do not ask the user for this value.
+- **Associated Requirement/User Story ID for Suite Ownership**: Optional. Use this when the source Work Item is a `Bug` and there is a linked `User Story` or requirement that should own the Requirement Based Suite. If not provided, continue with the source Work Item ID as fallback for suite resolution/creation.
+- **Destination Suite ID** *(child)*: Optional numeric ID of an existing suite that will receive the generated Test Cases. Allowed suite types when provided: `requirementTestSuite` and `staticTestSuite`.
 - **Test Plan ID** *(parent)*: Required in all execution paths. Needed both when reusing a suite and when creating one.
 - **Preferred ID input format for suite reuse**: Ask the user for fragment-only input from Test Plans URL: `planId=<PLAN_ID>&suiteId=<SUITE_ID>`. Do not ask for the full URL.
-- **Breadcrumb Count**: Required positive integer. Ask this before collecting any breadcrumb value.
-- **Breadcrumb List**: Required. Collect one full breadcrumb path at a time until the declared count is reached.
+- **Breadcrumbs**: Required. Collect one or more complete breadcrumb paths, one per line. Ask the user to enter all breadcrumbs they want covered, then confirm when done.
+- **Breadcrumb Format Example (accepted)**: `Crumbs: Home > Serial Number > Dashboard > Left Hand Navigation (LHN) -Dashboard > Alternate Parts`
+- **Multiple Breadcrumb Entry Example**:
+  ```
+  Crumbs: Home > Serial Number > Repair > Left Hand Navigation (LHN) - Repair
+  Crumbs: Home > Serial Number > Parts > Left Hand Navigation (LHN) - Parts
+  ```
 - **Discussion/Comments Scope**: Number of latest comments to evaluate. Default: `20`.
 - **Additional Instructions (Spanish Comments)**: Optional. Operational guidance only. Do not copy this text into titles, actions, expected results, or final Gherkin content.
 
@@ -35,12 +40,14 @@ Input safety note:
 - **Organization URL**: `https://dev.azure.com/cat-digital`
 - **Project**: `Cat Digital`
 - **Execution Input Mode Rule**: During execution, ask required inputs one at a time and do not batch multiple questions in one message.
-- **Terminology**: Use official Azure DevOps terms only: Work Item, ID, Requirement Based Suite, Test Case, Test Plan, WIQL.
-- **Type Rule**: This prompt supports `UI` test design only. If the user specifies `Webservices` or `Data`, stop and redirect.
+- **Terminology**: Use official Azure DevOps terms only: Work Item, ID, Requirement Based Suite, Static Test Suite, Test Case, Test Plan, WIQL.
+- **Type Rule**: This prompt is `UI`-only. The Test Design Type is always `UI` and must not be collected from the user.
 - **ID Validation**: Validate every provided ID is numeric before any API call.
 - **Work Item URL Rule**: If the user provides a URL, extract the numeric Work Item ID and validate it.
-- **Breadcrumb Count Rule**: Ask `How many breadcrumbs will be used?` before asking for breadcrumb values.
-- **Breadcrumb Collection Rule**: Collect breadcrumbs one at a time in declared order. Do not infer omitted breadcrumbs.
+- **Breadcrumb Collection Rule**: Collect one or more complete breadcrumb paths, one per line. Ask the user to provide all breadcrumbs they want covered before proceeding. Do not infer omitted segments.
+- **Breadcrumb Count Rule**: There is no fixed limit on the number of breadcrumbs. Accept all that the user provides.
+- **Accepted Route Example**: `Crumbs: Home > Serial Number > Dashboard > Left Hand Navigation (LHN) -Dashboard > Alternate Parts` is a valid breadcrumb input format.
+- **Breadcrumb Prefix Rule**: Accept and normalize optional `Crumbs:` prefix before segment resolution.
 - **Breadcrumb Resolution Rule**: Resolve each crumb segment against `docs/testcase-breadcrumbs.json` using the `crumstep` field. Matching should be case-insensitive after trimming surrounding whitespace, while preserving the canonical repository value in output.
 - **Missing Crumb Rule**: If any crumb is not found in `docs/testcase-breadcrumbs.json`, stop and report the missing crumb explicitly.
 - **Reusable Step Rule**: Build scenario navigation from the resolved breadcrumb steps. Reuse common path segments across breadcrumbs logically, but keep each final Gherkin scenario independently executable.
@@ -50,12 +57,12 @@ Input safety note:
   - Iteration comes from `System.IterationPath` on the Work Item.
   - Sprint label is always the last component of `System.IterationPath`.
   - Acceptance behavior comes first from `Microsoft.VSTS.Common.AcceptanceCriteria`, then `System.Description`, then discussion/comments.
-- **Requirement Association Rule**: If the source Work Item type is `Bug`, do not assume the suite requirement automatically. Ask for the associated requirement/User Story Work Item ID explicitly before suite resolution.
+- **Requirement Association Rule**: If the source Work Item type is `Bug`, the associated requirement/User Story ID is optional. If the user provides it, use it for suite ownership. If not, continue with the source Work Item ID as the suite ownership fallback.
 - **Iteration Rule**: Never ask the user for iteration or sprint name. The iteration must always be the same as the Work Item iteration.
-- **Suite Resolution Rule**: If the user provides `Requirement Based Suite ID`, require `Test Plan ID` as well and validate the suite using direct lookup `planId + suiteId`. Never attempt to auto-discover `planId` by scanning all plans.
-- **Suite Creation Rule**: If the user does not provide `Requirement Based Suite ID`, require `Test Plan ID` and create a Requirement Based Suite for the Work Item under that plan.
-- **Requirement Based Suite Rule**: Any target suite used by this prompt must resolve to exactly one suite and must be a Requirement Based Suite.
-- **Suite Hierarchy Rule**: Never treat a container or parent suite as the execution target for this prompt. The resolved suite must be the direct Requirement Based Suite that will receive the created Test Cases.
+- **Suite Resolution Rule**: If the user provides `Destination Suite ID`, require `Test Plan ID` as well and validate the suite using direct lookup `planId + suiteId`. Never attempt to auto-discover `planId` by scanning all plans.
+- **Suite Type Acceptance Rule**: If `Destination Suite ID` is provided, the resolved suite type must be either `requirementTestSuite` or `staticTestSuite`.
+- **Suite Creation Rule**: If the user does not provide `Destination Suite ID`, require `Test Plan ID` and create/reuse a Requirement Based Suite for the Work Item under that plan.
+- **Suite Hierarchy Rule**: Never treat a container or parent suite as the execution target for this prompt. The resolved suite must be a direct executable destination suite.
 - **Suite Resolution Reuse Rule**: Use `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` as the source of truth for suite resolution or creation behavior. Do not duplicate or override that logic.
 - **Requirement Mapping Rule**: If a provided suite is associated with a different requirement/work item than the requested source Work Item, stop and request confirmation before continuing.
 - **Case Ratio Baseline**: Use a default pattern of 1 happy path plus up to 3 negative/edge/boundary scenarios per core behavior when those scenarios cover distinct risks or observable outcomes.
@@ -63,8 +70,8 @@ Input safety note:
 - **Case Ratio Expansion Rule**: If more than 3 distinct negative/edge/boundary scenarios add real coverage value, include them, with a maximum of 5 negative/edge/boundary scenarios per happy path.
 - **Minimum Coverage**: Generate only the minimum number of test cases needed to cover acceptance criteria, core behavior, distinct breadcrumbs, and distinct risks.
 - **Duplicate Avoidance Rule**: If two breadcrumbs drive the same validation intent, consolidate coverage instead of creating redundant scenarios.
-- **Title Format**: `TC### - WI<WORK_ITEM_ID> - <Abbreviated Work Item Title> - <Short Significant Scenario>`.
-- **Title Brevity Rule**: Abbreviate the Work Item title to 3-6 words in Test Case titles, but never abbreviate the original Work Item title in reporting.
+- **Title Format**: `TC### - <SOURCE_TYPE_TAG> - <Short Significant Scenario>`, where `<SOURCE_TYPE_TAG>` must be `US` when source type is `User Story`, and `BUG` when source type is `Bug`.
+- **Title Source-Type Rule**: Do not include Work Item numeric ID or abbreviated Work Item title in Test Case titles. Use only `US` or `BUG` as the source-type tag plus a concise scenario description.
 - **Title Wording Rule**: Test Case titles and scenario summaries must describe observable product behavior. Do not include generic labels such as `Happy path`, `Edge case`, or `Negative case` in titles.
 - **Step Limits**: Max 180 characters per step action; max 220 characters per expected result.
 - **Step Count Rule**: Do not cap test cases at 3 steps. Use as many action/expected result pairs as needed to cover acceptance criteria and distinct risks without adding filler.
@@ -91,28 +98,24 @@ Input safety note:
 Before pre-flight validation, collect missing required inputs sequentially and do not infer missing values.
 
 Ask in this exact order:
-1. Work Item URL first; if unavailable, ask for numeric ID.
-2. Test design type.
-3. If the source Work Item is a `Bug`, ask for the associated requirement/User Story Work Item ID used for Requirement Based Suite ownership.
-4. Test Plan fragment for suite reuse or creation:
+1. Source Work Item URL first; if unavailable, ask for numeric ID.
+2. If the source Work Item is a `Bug`, ask whether there is an associated requirement/User Story ID for Requirement Based Suite ownership. If not provided, continue with the source Work Item ID as fallback.
+3. Test Plan fragment for suite reuse or creation:
    - `planId=<PLAN_ID>&suiteId=<SUITE_ID>` when reusing an existing suite.
    - `planId=<PLAN_ID>` when no existing suite is provided yet.
-5. Breadcrumb count.
-6. Each breadcrumb one at a time until the declared count is reached.
-7. Optional additional instructions, only after required inputs are complete.
+4. All breadcrumbs the user wants covered (one per line). After the user enters them, ask "Are there more breadcrumbs to add?" and collect additional ones until the user confirms they are done.
+5. Optional additional instructions, only after required inputs are complete.
 
 ### Pre-Flight Input Validation
 Before starting any API calls:
-1. Confirm Work Item input was provided as URL or numeric ID and resolve Work Item ID for this run.
+1. Confirm Source Work Item input was provided as URL or numeric ID and resolve Work Item ID for this run.
 2. Validate the Work Item ID is numeric.
-3. Validate `Test Design Type` is exactly `UI`.
-4. If the retrieved source Work Item type is `Bug`, require `Requirement Work Item ID for Suite Association` and validate it is numeric.
+3. If `Associated Requirement/User Story ID for Suite Ownership` is provided, validate it is numeric.
 5. Require `Test Plan ID` in all cases and validate it is numeric.
-6. If `Requirement Based Suite ID` is provided, validate it is numeric and perform a direct `planId + suiteId` lookup immediately.
-7. Validate `Breadcrumb Count` is a positive integer.
-8. Validate the number of collected breadcrumbs equals the declared count.
-9. If `Discussion/Comments Scope` is missing or empty, set it to `20`.
-10. If `Additional Instructions` are provided, confirm they are operational guidance only.
+6. If `Destination Suite ID` is provided, validate it is numeric and perform a direct `planId + suiteId` lookup immediately.
+7. Validate that at least one breadcrumb was provided and that every breadcrumb is non-empty.
+8. If `Discussion/Comments Scope` is missing or empty, set it to `20`.
+9. If `Additional Instructions` are provided, confirm they are operational guidance only.
 
 ### Step 1: Retrieve Work Item Details
 ```bash
@@ -143,38 +146,44 @@ Source priority for test design:
 Conflict rule:
 - If Description, Repro Steps, or Discussion conflict with Acceptance Criteria, follow Acceptance Criteria and record the conflict in output assumptions.
 
-### Step 2: Resolve or Create the Requirement Based Suite
-Execute `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` with the same run inputs:
-- `User Story Work Item ID = <REQUIREMENT_WORK_ITEM_ID_FOR_SUITE_ASSOCIATION>` when the source Work Item is a `Bug`
-- `User Story Work Item ID = <WORK_ITEM_ID>` when the source Work Item is already the requirement/User Story
-- `Requirement Based Suite ID = <REQUIREMENT_BASED_SUITE_ID>` if provided
-- `Test Plan ID = <TEST_PLAN_ID>`
+### Step 2: Resolve or Create the Destination Suite
+Use this branching behavior:
+- If `Destination Suite ID` is provided:
+  - Validate it directly with `planId + suiteId` lookup.
+  - Accept only when resolved suite type is `requirementTestSuite` or `staticTestSuite`.
+  - Set `Resolved Plan ID` and `Resolved Suite ID` from that lookup.
+- If `Destination Suite ID` is not provided:
+  - Execute `prompts/azure-devops/resolve-or-create-requirement-based-suite.md` with:
+    - `User Story Work Item ID = <ASSOCIATED_REQUIREMENT_USER_STORY_ID_FOR_SUITE_OWNERSHIP>` when the source Work Item is a `Bug` and the associated requirement/User Story ID was provided
+    - `User Story Work Item ID = <WORK_ITEM_ID>` when the source Work Item is already the requirement/User Story, or when the source Work Item is a `Bug` and no associated requirement/User Story ID was provided
+    - `Test Plan ID = <TEST_PLAN_ID>`
 
 Required handoff contract:
 - `Resolved Plan ID`
 - `Resolved Suite ID`
 
 ### Step 3: Resolve Breadcrumbs into Reusable Steps
-For each provided breadcrumb:
-1. Split the breadcrumb by `>`.
+For each provided breadcrumb (repeat for every breadcrumb the user supplied):
+1. Remove optional `Crumbs:` prefix, then split the breadcrumb by `>`.
 2. Trim each crumb segment.
 3. Resolve every crumb segment against `docs/testcase-breadcrumbs.json` using case-insensitive `crumstep` matching after trimming whitespace.
 4. Build the ordered navigation/action path from the resolved `step` and `expected_result` values.
-5. If any crumb is missing, stop and report the missing value explicitly.
+5. If any crumb in any breadcrumb is missing, stop and report every missing crumb explicitly before continuing.
 
-Resolution output for internal planning must preserve:
-- breadcrumb text
+Resolution output for internal planning must preserve, for each breadcrumb:
+- breadcrumb index and original text
 - resolved crumb order
 - action/expected-result pairs mapped to each crumb
 
 ### Step 4: Design Test Scenarios
-Design the minimum valid set of UI test cases using the resolved breadcrumbs plus Work Item behavior.
+Design the minimum valid set of UI test cases using all resolved breadcrumbs plus Work Item behavior.
 
 Coverage rules:
 - Start from the minimum viable set of scenarios needed for coverage.
-- Treat each breadcrumb as a candidate execution path, not automatically as a one-to-one test case.
+- Each breadcrumb is a candidate execution path. Apply the 1 happy path + up to 3 negative/edge/boundary ratio per breadcrumb only when those scenarios validate distinct risks. Do not force scenarios that have no real coverage value.
 - Create separate scenarios only when the final validation intent, acceptance behavior, or risk is distinct.
-- Reuse common navigation steps across breadcrumbs when paths overlap, but keep each scenario independently executable.
+- If two breadcrumbs lead to the same validation intent and risk, consolidate instead of duplicating.
+- Keep each scenario independently executable.
 - The final step pair of each scenario must validate the Work Item behavior under test.
 - Use Gherkin structure with Given, When, Then, and And as needed.
 
@@ -207,8 +216,8 @@ Injection rules:
 - After writing steps, read them back and verify the persisted structure.
 - Do not report completion if the persisted XML is empty or malformed.
 
-### Step 7: Link Test Cases to the Resolved Requirement Based Suite
-Use the resolved `Resolved Plan ID` and `Resolved Suite ID` to link every created Test Case to the target Requirement Based Suite.
+### Step 7: Link Test Cases to the Resolved Destination Suite
+Use the resolved `Resolved Plan ID` and `Resolved Suite ID` to link every created Test Case to the target destination suite.
 
 ### Step 8: Validate Test Case Creation and Links
 For each created Test Case ID, verify:
@@ -225,15 +234,11 @@ For each Test Case ID, create the Work Item relation back to the source Work Ite
 ## Output Format
 
 ### Inputs Summary
-- Work Item ID: <id>
+- Source Work Item ID: <id>
 - Work Item Type: <bug_or_user_story>
-- Requirement Work Item ID for Suite Association: <id_or_not_needed>
+- Associated Requirement/User Story ID for Suite Ownership: <id_or_not_provided>
 - Test Design Type: UI
-- Breadcrumb Count: <count>
-- Breadcrumbs:
-  - <breadcrumb_1>
-  - <breadcrumb_2>
-  - <...additional_breadcrumbs_as_needed>
+- Full Breadcrumb: <breadcrumb>
 
 ### Breadcrumb Resolution Summary
 - Breadcrumb: <breadcrumb>
@@ -268,8 +273,7 @@ Scenario: <scenario_title>
 ### Validation Checklist
 - [ ] Work Item retrieved successfully
 - [ ] Test design type confirmed as UI
-- [ ] Breadcrumb count collected
-- [ ] All breadcrumbs collected
+- [ ] Full breadcrumb collected
 - [ ] All breadcrumb segments resolved from repository
 - [ ] Acceptance criteria analyzed
 - [ ] Minimum sufficient test cases generated
