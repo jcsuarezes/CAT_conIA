@@ -78,7 +78,7 @@ There are three supported User Story types for test design: Webservices, UI, and
 If the User Story type is not explicitly provided, ask the user to confirm whether it is Webservices, UI, or Data before generating or saving test cases.
 Generate only the minimum number of test cases necessary to cover the acceptance criteria, core behavior, and distinct risks.
 Do not create extra scenarios when they do not validate a new rule, branch, or observable outcome.
-As a general rule, use a baseline of 1 happy path plus up to 3 negative/edge/boundary scenarios per core behavior when those scenarios validate distinct risks or observable outcomes.
+As a general rule, use a baseline of 1 happy path plus but not limited to 3 negative/edge/boundary scenarios per core behavior when those scenarios validate distinct risks or observable outcomes.
 Treat this as the default framework pattern, not as a strict quota. If no meaningful negative, edge, or boundary coverage exists, do not invent those scenarios just to reach four test cases.
 If analysis identifies more than 3 distinct negative/edge/boundary scenarios that add real coverage value, include them, with a maximum of 5 negative/edge/boundary scenarios per happy path.
 Prefer the minimum non-duplicative set that covers acceptance criteria, business risk, and observable behavior.

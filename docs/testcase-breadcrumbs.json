@@ -38,10 +38,41 @@
                     "crumstep": "Left Hand Navigation (LHN) - Parts",
                     "step": "Click the left-hand navigation (LHN).",
                     "expected_result": "A pane populated with elements related to parts is visible for the user to select."
-                },{
+                },
+                {
                     "crumstep": "Left Hand Navigation (LHN) - Repair",
                     "step": "Click the left-hand navigation (LHN).",
                     "expected_result": "A pane populated with elements related to repair is visible for the user to select."
+                },
+                {
+                    "crumstep": "Left Hand Navigation (LHN) - Troubleshooting",
+                    "step": "Click the left-hand navigation (LHN).",
+                    "expected_result": "A pane populated with elements related to troubleshooting is visible for the user to select."
+                },
+                {
+                    "crumstep": "Troubleshooting",
+                    "step": "Click the Troubleshooting tab.",
+                    "expected_result": "All troubleshooting information related to the selected product and its organization is displayed."
+                },
+                {
+                    "crumstep": "Left Hand Navigation (LHN) -Troubleshooting",
+                    "step": "Click on the Left Hand Navigation link.",
+                    "expected_result": "A menu with links associated with troubleshooting is displayed."
+                },
+                {
+                    "crumstep": "Advanced Troubleshooting",
+                    "step": "Click on the Advanced Troubleshooting link.",
+                    "expected_result": "Advanced troubleshooting codes are displayed."
+                },
+                {
+                    "crumstep": "Troubleshooting codes",
+                    "step": "Click on the Troubleshooting link.",
+                    "expected_result": "Codes related to troubleshooting are displayed."
+                },
+                {
+                    "crumstep": "Symptoms",
+                    "step": "Click on the Symptoms link.",
+                    "expected_result": "Codes related to symptoms are displayed."
                 }
             ]
         }

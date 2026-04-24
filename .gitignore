@@ -17,9 +17,20 @@ outputs/daily/*.md
 *.tmp
 *.bak
 *.swp
+payloads_tc_remediation/
 
 # OS/editor artifacts
 .DS_Store
 Thumbs.db
 *.ps1
 Azure_projects-2026-04-17.bundle
+suite_2682875.json
+tmp_tc_2680012.json
+iter_full.json
+suite_payload.json
+tmp_tc_2680013.json
+relation.json
+tmp_tc_2680011.json
+area_full.json
+test_case_link.json
+tmp_link_single_tc.json
